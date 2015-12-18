@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import _env
+import io
 import json
 import re
 import time
@@ -200,15 +201,35 @@ def test():
     print(find_first_tag('正则表达式指南'))
 
 
+def incr_migrate(coll_name, limit):
+    coll = get_collection(DB, coll_name)
+    all_cnt = coll.find().count()
+    start = 0
+    index = 0
+
+    while start < all_cnt:
+        res = migrate(coll_name, start, limit)
+        filename = str(index) + '_article.json'
+        # print(json.dumps(res, indent=4))
+        with io.open(filename, 'w+', encoding='utf8') as outfile:
+                data = json.dumps(res, ensure_ascii=False,
+                                  encoding='utf8', indent=4)
+                outfile.write(unicode(data))
+
+        index += 1
+        start += limit
+
+
 def main():
     import sys
     try:
         cnt = int(sys.argv[1])
     except:
         cnt = 300
-    res = migrate('article_pyhome', 1000, 1000)
+    res = migrate('article_pyhome', 1000, 500)
     print(json.dumps(res, indent=4))
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    incr_migrate('article_pyhome', limit=500)
