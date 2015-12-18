@@ -11,7 +11,8 @@ from config.config import CONFIG
 
 
 DB = CONFIG.MONGO.DATABASE
-_COLL = get_collection(DB, 'uploaded')
+#_COLL = get_collection(DB, 'uploaded')
+_COLL = get_collection(DB, 'uploaded_pyhome')
 
 
 def is_uploaded(title):

@@ -52,10 +52,11 @@ class TagpageSpider(AsySpider):
 
 
 class ArticleSpider(AsySpider):
-    coll = get_collection(DB, 'codes', 'motor')
+    coll = get_collection(DB, 'code_pyhome', 'motor')
 
     @gen.coroutine
     def update_doc(self, url, data_dict):
+        """update doc in mongo"""
         yield ArticleSpider.coll.update(
             {'source_url': url},
             {
@@ -66,10 +67,11 @@ class ArticleSpider(AsySpider):
 
     @gen.coroutine
     def handle_html(self, url, html):
-        print(url)
-        # article_id = url.rsplit('/', 2)[-1]
-        data = parse_sharejs(url, html)
-        yield self.update_doc(url, data)
+        if 'python' in url:    # only save python code
+            print(url)
+            # article_id = url.rsplit('/', 2)[-1]
+            data = parse_sharejs(url, html)
+            yield self.update_doc(url, data)
 
     def save_html(self, url, html):
         """http://www.sharejs.com/codes/javascript/9067"""

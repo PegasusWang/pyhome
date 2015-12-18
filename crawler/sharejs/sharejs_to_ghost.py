@@ -89,7 +89,7 @@ def replace_post(post_data):
     }
     d['id'] = int(post_data['source_url'].rsplit('/', 1)[1].split('.')[0])
     d['title'] = post_data['title'].strip()
-    d['slug'] = post_data['title'].strip().replace(' ', '-').lower()
+    d['slug'] = post_data['title'].lower().strip()
     d['markdown'] = xhtml_unescape(post_data['content'].strip())    # unescape
     return d
 
@@ -106,20 +106,25 @@ def migrate(coll_name, limit=10):
     posts = []
     posts_tags = []
     index = 0
+    title_set = set()
 
     for doc in coll.find().batch_size(1000):
         title = doc.get('title')
-        if not exist_or_insert(title):
-            doc_id = doc.get('_id')
-            post_id = int(doc['source_url'].rsplit('/', 1)[1].split('.')[0])
-            index += 1
-            if index > limit:
-                break
+        slug = title.lower().strip()
+        if slug not in title_set:
+            title_set.add(slug)
 
-            posts.append(replace_post(doc))
-            posts_tags.append(
-                {"tag_id": 1000, "post_id": post_id}
-            )
+            if not exist_or_insert(slug):
+                doc_id = doc.get('_id')
+                post_id = int(doc['source_url'].rsplit('/', 1)[1].split('.')[0])
+                index += 1
+                if index > limit:
+                    break
+
+                posts.append(replace_post(doc))
+                posts_tags.append(
+                    {"tag_id": 1000, "post_id": post_id}
+                )
 
     data = {
         "posts": posts,
@@ -199,7 +204,7 @@ def main():
         cnt = int(sys.argv[1])
     except:
         cnt = 10
-    res = migrate('code', cnt)
+    res = migrate('code_pyhome', cnt)
     print(json.dumps(res, indent=4))
 
 if __name__ == '__main__':
