@@ -91,7 +91,16 @@ def ping_ningningtoday():
         ping_all(site_name, site_host, post_url, rss_url)
 
 
+def ping_pythome():
+    rss_url = "http://pyhome.org/sitemap-posts.xml"
+    to_ping_url_list = get_all_post_url(rss_url) - get_already_ping_url()
+    site_name = "Python之家"
+    site_host = "http://pyhome.org/"
+    for post_url in to_ping_url_list:
+        time.sleep(5)
+        ping_all(site_name, site_host, post_url, rss_url)
+
+
 if __name__ == '__main__':
-    ping_jishushare()
-    ping_ningningtoday()
+    ping_pythome()
     print('finish')
