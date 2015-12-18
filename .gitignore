@@ -1,0 +1,10 @@
+.ropeproject
+*.pyc
+*config.py
+*.swp
+*log
+.DS_Store
+*.conf
+*.json
+*settings.py
+_templates/*

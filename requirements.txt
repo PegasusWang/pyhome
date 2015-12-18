@@ -1,0 +1,15 @@
+tornado
+mako
+redis
+tornado-redis
+simplejson
+requests
+jieba
+beautifulsoup4
+html2text
+motor
+markdown2
+Pygments
+pymongo==2.8.0
+pytest
+pdfkit

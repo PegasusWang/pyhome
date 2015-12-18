@@ -1,0 +1,32 @@
+jb51    # pass已爬
+伯乐在线 http://python.jobbole.com/81153/    # 伯乐的文章做的相当不错了，很多也可以转载用，不过只有技术相关的。
+http://www.bkjia.com/Linux/935878.html
+http://www.linuxdiyf.com/linux/14715.html
+http://www.linuxidc.com/Linux/2010-05/26394.htm
+http://www.zgxue.com/itbc/article/63661.htm
+http://www.tutorialspoint.com/index.htm
+http://www.bogotobogo.com/python/python_generators.php
+http://www.webtag123.com/javascript/22907.html
+http://www.ziqiangxuetang.com/python/att-dictionary-setdefault.html
+http://www.yiibai.com/python/dictionary_setdefault.html
+http://www.chinaunix.net/
+http://www.kancloud.cn/explore   #看云，这个网站和readdoc类似，有挺多书籍教程
+http://www.kancloud.cn/thinkphp/python-guide/39553
+http://www.pythoner.com/205.html
+http://download.csdn.net/detail/doomlord/8449655
+http://www.111cn.net/phper/python/44052.htm
+https://pythonadventures.wordpress.com/2013/08/13/concurrent-futures/
+http://segmentfault.com/a/1190000001813992
+#segmentfault文章质量比较高，并且是大陆共享3.0协议，可以任意转载保留原文连接
+
+http://www.lxway.com/168696.html  # 这个比较好爬，递增id的url,注意递增忽略404
+
+http://simple-is-better.com/news/  # 这个是专做python文章和招聘的，python较多
+http://blog.fens.me/nodejs-restify/  # 不少高质量的nodejs，R，hadoop文章,允许转载
+
+http://www.jeepshoe.org/914692121.htm    # 简单的递增id，跳过404
+http://dataunion.org/11601.html    #大数据相关
+
+http://www.ahlinux.com/ubuntu/18789.html    # linux文章
+http://www.shangxueba.com/jingyan/2265420.html
+http://chuansong.me/account/awesomeport?start=1056   #传送门
