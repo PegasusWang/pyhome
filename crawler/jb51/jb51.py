@@ -14,12 +14,13 @@ DB = CONFIG.MONGO.DATABASE
 def is_python_article(data_dict):
     title = data_dict.get('title').lower()
     content = data_dict.get('content').lower()
-    if ('python' in title) or ('python' in content):
+    if ('python' in title) or (content.count('python') > 2):
         return True
     return False
 
 
 class Jb51Spider(AsySpider):
+
     def __init__(self, urls, concurrency=10, results=None, **kwargs):
         super(Jb51Spider, self).__init__(urls, concurrency, results, **kwargs)
         self.db = get_collection(DB, 'article_pyhome', 'motor')    # change coll

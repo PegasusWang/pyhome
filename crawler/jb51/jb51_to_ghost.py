@@ -68,7 +68,7 @@ def replace_post(post_data):
     d = {
         "id": 5,
         "title":        "my blog post title",
-        "slug":         "my-blog-post-title",
+        #"slug":         "my-blog-post-title",
         "markdown":     "the *markdown* formatted post body",
         #"html":         "the <i>html</i> formatted post body",
         "image":        None,
@@ -88,12 +88,13 @@ def replace_post(post_data):
     }
     d['id'] = int(post_data['source_url'].rsplit('/', 1)[1].split('.')[0])
     d['title'] = post_data['title'].strip()
-    d['slug'] = post_data['title'].strip().replace(' ', '-').lower()
+    if post_data['slug'] > 30:
+        d['slug'] = post_data['slug'][0:30]
     d['markdown'] = post_data['content'].strip()
     return d
 
 
-def migrate(coll_name='article', limit=10):
+def migrate(coll_name='article_pyhome', skip=0, limit=10):
     res = {
         "meta": {
             "exported_on": cur_timestamp(),
@@ -104,21 +105,24 @@ def migrate(coll_name='article', limit=10):
 
     posts = []
     posts_tags = []
-    index = 0
+    slug_set = set()
 
-    for doc in coll.find().batch_size(1000):
+    for doc in coll.find().skip(skip).limit(limit):
         title = doc.get('title')
-        if not exist_or_insert(title):
-            doc_id = doc.get('_id')
-            post_id = int(doc['source_url'].rsplit('/', 1)[1].split('.')[0])
-            index += 1
-            if index > limit:
-                break
+        slug = title.lower().strip()
 
-            posts.append(replace_post(doc))
-            posts_tags.append(
-                {"tag_id": 1, "post_id": post_id}
-            )
+        if slug and (slug not in slug_set):
+            slug_set.add(slug)
+            doc['slug'] = slug
+
+            if not exist_or_insert(slug):
+                doc_id = doc.get('_id')
+                post_id = int(doc['source_url'].rsplit('/', 1)[1].split('.')[0])
+
+                posts.append(replace_post(doc))
+                posts_tags.append(
+                    {"tag_id": 1, "post_id": post_id}
+                )
 
     data = {
         "posts": posts,
@@ -201,8 +205,8 @@ def main():
     try:
         cnt = int(sys.argv[1])
     except:
-        cnt = 3000
-    res = migrate('article', cnt)
+        cnt = 300
+    res = migrate('article_pyhome', 1000, 1000)
     print(json.dumps(res, indent=4))
 
 
