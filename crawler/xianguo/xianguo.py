@@ -100,46 +100,12 @@ def xianguo_spider(q, coll_name='tech', max_news_num=1000):
             q.put((URL, form_dict))    # put a tuple
 
 
-PROGRAM_ID = """JavaEye博客 1001482
-InfoQ中文站 1000521
-LUPA开源社区 1000506
-Linux公社 10007938
+PYTHON_ID = """python.cn(jobs, news) 1766610
+Python文档 1017851
 Planet Python 1017844
-CSDN博客 1001245
-博客园首页精华 1001071"""
-
-
-FUNNY_ID = """咋整 1945702
-捧腹网 1725268
-知乎每日精选 1199167
-煎蛋 1000004
-每日神贴 2271038
-花瓣美女精选 1276391
-挖段子网 » 挖趣图 1687446
-有意思吧 1000003
-FUN来了 2235038
-青年图摘 1765557
-蛋花儿 1763500
-每日囧图 2200684
-十万个女朋友 1967108
-神吐槽 2256329"""
-
-
-TECH_ID = """钛媒体 1410319
-博客园-IT新闻 1759565
-创业邦 1057591
-36氪 1057676
-快鲤鱼 1382170
-创业家 1132786
-TechCrunch 中国 1847011
-小众软件 1000542
-极客公园 1250579
-爱范儿 1000806
-i黑马 1236199
-新智派 2271997
-瘾科技 1000192
-互联网的那点事 1057660
-tech2ipo创见 1059587"""
+豆瓣Python编程小组 1017845
+learning python 1017849
+老王python 1762185"""
 
 
 def get_sectionid_list(title_section_str):
@@ -162,7 +128,7 @@ def run_spider(title_section_str, coll_name):
 
 
 def main():
-    for s in ['PROGRAM', 'FUNNY', 'TECH']:
+    for s in ['PYTHON']:
         title_section_str = globals().get(s+'_ID')
         coll_name = s.lower()
         run_spider(title_section_str, coll_name)
