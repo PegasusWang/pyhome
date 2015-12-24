@@ -172,7 +172,7 @@ def main():
     try:
         cnt = int(sys.argv[1])
     except:
-        cnt = 10
+        cnt = 20
     res = migrate('python', cnt)
     print(json.dumps(res, indent=4))
 
