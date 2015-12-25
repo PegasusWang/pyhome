@@ -1,3 +1,3 @@
 # pyhome
-http://pyhome.org爬虫和文章。
-包含了一些网站的全站文章爬虫。
+[http://pyhome.org](http://pyhome.org)
+Python之家文章和一些网站和app的爬虫。:relaxed:
