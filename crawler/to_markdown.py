@@ -28,12 +28,25 @@ def codingpy_to_markdown(url):
     print(html2markdown(unicode(content)))
 
 
+def iteye_to_markdown(url):
+    """http://yunjianfei.iteye.com/blog/2185476"""
+    if not url:
+        return
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'
+    }
+    html = requests.get(url, headers=headers).content
+    soup = BeautifulSoup(html)
+    content = soup.find(id='blog_content')
+    print(html2markdown(unicode(content)))
+
+
 def main():
     try:
         url = sys.argv[1]
     except IndexError:
         url = ''
-    codingpy_to_markdown(url)
+    iteye_to_markdown(url)
 
 
 if __name__ == '__main__':
