@@ -2,34 +2,46 @@
 # -*- coding:utf-8 -*-
 
 import time
+import logging
 from datetime import timedelta
 from tornado import httpclient, gen, ioloop, queues
 import traceback
-from extract import extract
+from bs4 import BeautifulSoup
+
+
+def get_logger(name):
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(name)
+    return logger
 
 
 class AsySpider(object):
     """A simple class of asynchronous spider."""
     def __init__(self, urls, concurrency=10, results=None, **kwargs):
-        urls.reverse()
-        self.urls = urls
         self.concurrency = concurrency
         self._q = queues.Queue()
         self._fetching = set()
         self._fetched = set()
         if results is None:
             self.results = []
+        for url in urls:
+            self._q.put(url)
+        self.logger = get_logger(self.__class__.__name__)
+        httpclient.AsyncHTTPClient.configure(
+            "tornado.curl_httpclient.CurlAsyncHTTPClient"
+        )
 
     def fetch(self, url, **kwargs):
         fetch = getattr(httpclient.AsyncHTTPClient(), 'fetch')
         return fetch(url, raise_error=False, **kwargs)
 
     def handle_html(self, url, html):
-        """handle html page"""
+        """处理html页面"""
         print(url)
 
     def handle_response(self, url, response):
-        """inherit and rewrite this method if necessary"""
+        """处理http响应，对于200响应码直接处理html页面，
+        否则按照需求处理不同响应码"""
         if response.code == 200:
             self.handle_html(url, response.body)
 
@@ -39,13 +51,14 @@ class AsySpider(object):
 
     @gen.coroutine
     def get_page(self, url):
+        # yield gen.sleep(10)    # sleep when need
         try:
             response = yield self.fetch(url)
-            #print('######fetched %s' % url)
+            self.logger.debug('######fetched %s' % url)
         except Exception as e:
-            print('Exception: %s %s' % (e, url))
+            self.logger.debug('Exception: %s %s' % (e, url))
             raise gen.Return(e)
-        raise gen.Return(response)
+        raise gen.Return(response)    # py3 can just return response
 
     @gen.coroutine
     def _run(self):
@@ -56,17 +69,13 @@ class AsySpider(object):
                 if current_url in self._fetching:
                     return
 
-                #print('fetching****** %s' % current_url)
+                self.logger.debug('fetching****** %s' % current_url)
                 self._fetching.add(current_url)
 
                 response = yield self.get_page(current_url)
                 self.handle_response(current_url, response)    # handle reponse
 
                 self._fetched.add(current_url)
-
-                for i in range(self.concurrency):
-                    if self.urls:
-                        yield self._q.put(self.urls.pop())
 
             finally:
                 self._q.task_done()
@@ -76,16 +85,15 @@ class AsySpider(object):
             while True:
                 yield fetch_url()
 
-        self._q.put(self.urls.pop())    # add first url
-
         # Start workers, then wait for the work queue to be empty.
         for _ in range(self.concurrency):
             worker()
 
         yield self._q.join(timeout=timedelta(seconds=300000))
+
         try:
             assert self._fetching == self._fetched
-        except AssertionError:
+        except AssertionError:    # some http error not handle
             print(self._fetching-self._fetched)
             print(self._fetched-self._fetching)
 
@@ -104,21 +112,27 @@ class MySpider(AsySpider):
             'cookie': cookies_str
         }
         return super(MySpider, self).fetch(
-            url, headers=headers
+            url, headers=headers,
+            #proxy_host="127.0.0.1", proxy_port=8787,    # for proxy
         )
 
     def handle_html(self, url, html):
-        title = extract('<title>', '</title>', html)
-        print url, title.decode('gb18030').encode('utf-8')
+        print(BeautifulSoup(html, 'lxml').find('title'))
 
 
 def main():
+    st = time.time()
     urls = []
-    for page in range(1, 70000):
+    n = 1000
+    for page in range(1, n):
         urls.append('http://www.jb51.net/article/%s.htm' % page)
-    s = MySpider(urls)
+    s = MySpider(urls, 10)
     s.run()
+    print(time.time()-st)
+    print(60.0/(time.time()-st)*1000, 'per minute')
+    print(60.0/(time.time()-st)*1000/60.0, 'per second')
 
 
 if __name__ == '__main__':
     main()
+

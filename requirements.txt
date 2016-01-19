@@ -13,3 +13,4 @@ Pygments
 pymongo==2.8.0
 pytest
 pdfkit
+pycurl

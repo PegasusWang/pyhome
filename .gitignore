@@ -8,3 +8,4 @@
 *.json
 *settings.py
 _templates/*
+.cache/
