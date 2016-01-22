@@ -64,5 +64,12 @@ def test_lagou():
     print(r.content)
 
 
+def test_zhihu():
+    zhihu_str = """curl 'https://www.zhihu.com/node/QuestionAnswerListV2' -H 'Cookie: _za=d0bbd9e4-8554-4fac-adff-40adf155b15f; _ga=GA1.2.714263680.1432817768; cap_id="MGQxM2EzNjhhMTRlNDcyYWFjZTlkYmQ4ZGNkYmE4Mjc=|1451655945|fcca602899f4493a132e6b2a8f8fef326306892e"; z_c0="QUFBQUpLRWNBQUFYQUFBQVlRSlZUUmNRcmxZVUNPQ2IxYkZvNEdzT01QRWllTXpMcEFVMUhnPT0=|1451655959|83daafac036cdcc77603bec07ac1a50ddeea356e"; _xsrf=7f8b72eba452c3aeb103d45310411341; q_c1=3e3e9f2492a940c4a3ba3228ea4697cd|1452827484000|1417447428000; __utmt=1; __utma=155987696.714263680.1432817768.1453380412.1453380412.1; __utmb=155987696.1.10.1453380412; __utmc=155987696; __utmz=155987696.1453380412.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)' -H 'Origin: https://www.zhihu.com' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -H 'Accept: */*' -H 'Referer: https://www.zhihu.com/question/27621722' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' --data 'method=next&params=%7B%22url_token%22%3A27621722%2C%22pagesize%22%3A50%2C%22offset%22%3A100%7D&_xsrf=7f8b72eba452c3aeb103d45310411341' --compressed"""
+    url, headers, data = parse_curl_str(zhihu_str)
+    r = requests.post(url, data=data, headers=headers)  # loads
+    print(r.content)
+
+
 if __name__ == '__main__':
-    test_lagou()
+    test_zhihu()
