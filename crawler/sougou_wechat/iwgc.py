@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from ztz.db._mongo import QWECHAT as Q
-from ztz.util.extract import extract, extract_all
-from ztz.util.req import requests
+import _env
+from lib._db import get_collection
+from extract import extract, extract_all
+from web_util import requests
+from config.config import CONFIG
 
 """
 抓取http://www.iwgc.cn/网站微信公众号列表
@@ -25,12 +27,15 @@ from ztz.util.req import requests
 
 """
 
+COL = get_collection(CONFIG.MONGO.DATABASE, 'wechat_name')
+
 
 def wechat_list():
     for _id in range(1, 16):
         url = 'http://www.iwgc.cn/%d' % _id
         page = 1
         res = []
+
         while True:
             page_url = url + '/p/' + str(page)
             html = requests.get(page_url).text
@@ -41,13 +46,22 @@ def wechat_list():
             else:
                 res.extend(name_list)
             page += 1
-        Q.wechat_name.upsert(_id=_id)(name_list=res)
+
+        COL.update(
+            {'_id': _id},
+            {
+                '$set': {'name_list': res}
+            },
+            upsert=True
+        )
 
 
 def name_list(_id):
-    l = Q.wechat_name.get(_id).name_list
+    l = COL.find_one(_id).get('name_list')
     return [s.strip() for s in set(l)]
 
 
 if __name__ == '__main__':
     wechat_list()
+    for i in name_list(1):
+        print(i)
