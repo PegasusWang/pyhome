@@ -33,7 +33,8 @@ class AsySpider(object):
 
     def fetch(self, url, **kwargs):
         fetch = getattr(httpclient.AsyncHTTPClient(), 'fetch')
-        return fetch(url, raise_error=False, **kwargs)
+        request = httpclient.HTTPRequest(url, **kwargs)
+        return fetch(request, raise_error=False)
 
     def handle_html(self, url, html):
         """处理html页面"""
@@ -123,10 +124,10 @@ class MySpider(AsySpider):
 def main():
     st = time.time()
     urls = []
-    n = 1000
+    n = 100
     for page in range(1, n):
         urls.append('http://www.jb51.net/article/%s.htm' % page)
-    s = MySpider(urls, 10)
+    s = MySpider(urls, 20)
     s.run()
     print(time.time()-st)
     print(60.0/(time.time()-st)*1000, 'per minute')

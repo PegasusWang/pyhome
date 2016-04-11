@@ -65,12 +65,34 @@ def emptysqua_re_to_markdown(url='https://emptysqua.re/blog/refactoring-tornado-
     print(html2markdown(unicode(content)))
 
 
+def segmentfault_to_markdown(url='https://segmentfault.com/a/1190000000729575'):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'
+    }
+    html = requests.get(url, headers=headers).content
+    soup = BeautifulSoup(html)
+    content = soup.find('div', class_='article fmt')
+    print(html2markdown(unicode(content)))
+
+
+def to_markdown(url):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'
+    }
+    html = requests.get(url, headers=headers).content
+    soup = BeautifulSoup(html)
+    #content = soup.find('div', class_='post-body')
+    content = soup.find(id='content')
+    print(html2markdown(unicode(content)))
+    #print(unicode(content))
+
+
 def main():
     try:
         url = sys.argv[1]
     except IndexError:
-        url = 'http://www.jianshu.com/p/67fa1e2114c5'
-    emptysqua_re_to_markdown()
+        url = 'http://python.jobbole.com/84301/'
+    to_markdown(url)
 
 
 if __name__ == '__main__':

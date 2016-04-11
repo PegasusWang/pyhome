@@ -15,3 +15,4 @@ pytest
 pdfkit
 pycurl
 six
+cchardet

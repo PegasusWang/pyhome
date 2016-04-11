@@ -32,12 +32,12 @@ def encode_to_dict(encoded_str):
 
 
 def parse_curl_str(s):
-    """convert chrome curl string to url, headers dict and data"""
+    """convert chrome curl string to url, headers_dict and data"""
     pat = re.compile("'(.*?)'")
     str_list = [i.strip() for i in re.split(pat, s)]   # 拆分curl请求字符串
 
     url = ''
-    headers = {}
+    headers_dict = {}
     data = ''
 
     for i in range(0, len(str_list)-1, 2):
@@ -50,12 +50,12 @@ def parse_curl_str(s):
         elif arg.startswith('-H'):
             header_key = string.split(':', 1)[0].strip()
             header_val = string.split(':', 1)[1].strip()
-            headers[header_key] = header_val
+            headers_dict[header_key] = header_val
 
         elif arg.startswith('--data'):
             data = string
 
-    return url, headers, data
+    return url, headers_dict, data
 
 
 def retry(retries=3):
@@ -98,7 +98,7 @@ def get(*args, **kwds):
         kwds['timeout'] = 10
     if 'headers' not in kwds:
         headers = {
-            'User-Agent': 'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
         }
         kwds['headers'] = headers
 
