@@ -55,6 +55,7 @@ def get_price():
     }
     url = 'http://action.ininin.com/in_quotation/get_price?ininin=BEGHFDGFECCCAEHR'
     #url = 'http://httpbin.org/post'
+    # 根据headers中的content-type决定用什么提交https://imququ.com/post/four-ways-to-post-data-in-http.html#toc-3
     r = requests.post(url, data=urlencode(send_data))
     print(r.url)
     print(r.content)
