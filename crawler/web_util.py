@@ -31,14 +31,19 @@ def encode_to_dict(encoded_str):
     return d
 
 
-def parse_curl_str(s):
-    """convert chrome curl string to url, headers_dict and data"""
+def parse_curl_str(s, data_as_dict=False):
+    """Convert chrome curl string to url, headers dict and data string
+    此函数用来作为单元测试中提交按钮的操作
+    :param s: 右键chrome请求点击copy as curl得到的字符串。
+    :param data_as_dict: if True, return data as dict
+    """
+    s = s.strip('\n').strip()
     pat = re.compile("'(.*?)'")
     str_list = [i.strip() for i in re.split(pat, s)]   # 拆分curl请求字符串
 
     url = ''
     headers_dict = {}
-    data = ''
+    data_str = ''
 
     for i in range(0, len(str_list)-1, 2):
         arg = str_list[i]
@@ -53,9 +58,17 @@ def parse_curl_str(s):
             headers_dict[header_key] = header_val
 
         elif arg.startswith('--data'):
-            data = string
+            data_str = string
 
-    return url, headers_dict, data
+    if data_as_dict:
+        data_dict = {}
+        pair_list = unquote(data_str).split('&')
+        for pair in pair_list:
+            k, v = pair.split('=')
+            data_dict[k] = v
+        return url, headers_dict, data_dict
+    else:
+        return url, headers_dict, data_str
 
 
 def retry(retries=3):
