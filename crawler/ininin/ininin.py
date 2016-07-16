@@ -58,6 +58,8 @@ def get_price():
     encoded_data = urlencode(send_data)
     print(encoded_data)
     r = requests.post(url, data=encoded_data)
+    # 根据headers中的content-type决定用什么提交https://imququ.com/post/four-ways-to-post-data-in-http.html#toc-3
+    r = requests.post(url, data=urlencode(send_data))
     print(r.url)
     print(r.content)
 
