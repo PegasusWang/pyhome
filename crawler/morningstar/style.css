@@ -1,0 +1,33 @@
+table {
+    border-collapse: collapse;
+}
+
+tr.even {
+    background-color: #C2C8D4;
+}
+
+tr.over {
+    background-color: #8797B7;
+}
+
+td {
+    border-bottom: 1px solid #C2C8D4;
+    padding: 5px;
+}
+
+th {
+    border-right: 2px solid #FFF;
+    color: #FFF;
+    padding-right: 40px;
+    padding-left: 20px;
+    background-color: #626975;
+}
+
+th.sortUp {
+    background: #626975 url(jquery/images/asc.gif) no-repeat right center;
+}
+
+th.sortDown {
+    background: #626975 url(jquery/images/desc.gif) no-repeat right center;
+}
+

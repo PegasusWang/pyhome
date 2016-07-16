@@ -55,7 +55,9 @@ def get_price():
     }
     url = 'http://action.ininin.com/in_quotation/get_price?ininin=BEGHFDGFECCCAEHR'
     #url = 'http://httpbin.org/post'
-    r = requests.post(url, data=urlencode(send_data))
+    encoded_data = urlencode(send_data)
+    print(encoded_data)
+    r = requests.post(url, data=encoded_data)
     print(r.url)
     print(r.content)
 

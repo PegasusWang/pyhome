@@ -80,7 +80,7 @@ class PositionPageSpider(AsySpider):
         for word in ['tornado', 'django', 'flask', 'Pyramid', 'Pylons', 'paste',
                      'gevent', 'twist', 'celery', 'bottle', 'cherrypy', 'pylon',
                      'TurboGears', 'klein', 'web.py', 'zope', 'grok', 'web2py',
-                     'cubic', 'wheezy']:
+                     'cubic', 'wheezy', '爬虫', 'requests', 'scrapy']:
             if word.lower() in html:
                 C[word] += 1
 
