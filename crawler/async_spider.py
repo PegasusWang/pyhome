@@ -17,20 +17,27 @@ def get_logger(name):
 
 class AsySpider(object):
     """A simple class of asynchronous spider."""
-    def __init__(self, urls, concurrency=10, results=None, sleep=None, **kwargs):
+    def __init__(self, urls=None, concurrency=10, results=None, sleep=None, **kwargs):
         self.concurrency = concurrency
         self._q = queues.Queue()
         self._fetching = set()
         self._fetched = set()
         self.sleep = sleep
+        self.urls = urls or []
         if results is None:
             self.results = []
-        for url in urls:
+        if not self.urls:
+            self.init_urls()
+        for url in self.urls:
             self._q.put(url)
         self.logger = get_logger(self.__class__.__name__)
         httpclient.AsyncHTTPClient.configure(
             "tornado.curl_httpclient.CurlAsyncHTTPClient"
         )
+
+    def init_urls(self):
+        """init_urls: assign url list to self.urls"""
+        raise NotImplementedError
 
     def fetch(self, url, **kwargs):
         fetch = getattr(httpclient.AsyncHTTPClient(), 'fetch')
