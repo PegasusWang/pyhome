@@ -8,6 +8,7 @@ import collections
 import re
 import json
 import requests
+import traceback
 from bs4 import BeautifulSoup
 from async_spider import AsySpider
 from web_util import parse_curl_str
@@ -30,7 +31,7 @@ def retry(times=3):
                     else:
                         break
                 except Exception as e:
-                    print(e)
+                    traceback.print_exc()
                     response = None
             return response
         return _wrapper

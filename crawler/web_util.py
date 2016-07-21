@@ -91,12 +91,15 @@ def retry(retries=3, sleep=None):
                         break
                     elif response.status_code != 200:
                         print(response.status_code)
+                        change_ip()
                         continue
                     else:
                         break
                 except Exception as e:
                     traceback.print_exc()
+                    print('change ip')
                     response = None
+                    change_ip()
 
                 if sleep is not None:
                     time.sleep(sleep)
