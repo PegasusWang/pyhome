@@ -8,10 +8,10 @@ http://stackoverflow.com/questions/23118249/whats-the-difference-between-request
 """
 
 import re
-from functools import wraps
+import time
 import traceback
 import requests
-
+from functools import wraps
 
 def encode_to_dict(encoded_str):
     """ 将encode后的数据拆成dict
@@ -71,7 +71,7 @@ def parse_curl_str(s, data_as_dict=False):
         return url, headers_dict, data_str
 
 
-def retry(retries=3):
+def retry(retries=3, sleep=None):
     """一个失败请求重试，或者使用下边这个功能强大的retrying
     pip install retrying
     https://github.com/rholder/retrying
@@ -97,24 +97,24 @@ def retry(retries=3):
                 except Exception as e:
                     traceback.print_exc()
                     response = None
+
+                if sleep is not None:
+                    time.sleep(sleep)
             return response
         return _wrapper
     return _retry
 
 
-_get = requests.get
+_get = requests.get    # 防止循环引用
 
 
 @retry(5)
 def get(*args, **kwds):
-    if 'timeout' not in kwds:
-        kwds['timeout'] = 10
-    if 'headers' not in kwds:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
-        }
-        kwds['headers'] = headers
-
+    kwds.setdefault('timeout', 10)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
+    }
+    kwds.setdefault('headers', headers)
     return _get(*args, **kwds)
 
 requests.get = get

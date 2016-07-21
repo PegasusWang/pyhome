@@ -16,3 +16,5 @@ pdfkit
 pycurl
 six
 cchardet
+celery
+celery[redis]
