@@ -171,3 +171,14 @@ change_tor_ip = change_ip
 
 def get_domain(url):
     return get_tld(url)
+
+
+def logged(class_):
+    """logged decorator.
+
+    :param class_: add 'logger' attribute to class
+    """
+    logging.getLogger("requests").setLevel(logging.WARNING)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    class_.logger = logging.getLogger(class_.__name__)
+    return class_

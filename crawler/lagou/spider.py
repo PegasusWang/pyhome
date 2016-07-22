@@ -7,9 +7,10 @@ from config.config import CONFIG
 from extract import extract_all
 from lib._db import get_db
 from utils import UrlManager, IncrId
-from web_util import parse_curl_str, change_ip, get
+from web_util import parse_curl_str, change_ip, get, logged
 
 
+@logged
 class LagouCrawler(object):
     curl_str = """"""
     db = get_db('htmldb')
@@ -47,10 +48,12 @@ class LagouCrawler(object):
             return self.url_manager.last_url()
 
     def remove_url(self, url):
+        self.logger.info('remove url: %s', url)
         return self.url_manager.remove_url(url)
 
     def save_html(self, url, html):
         # mongo 判断重复
+        self.logger.info('save html of url: %s', url)
         self.col.update(
             {
                 '_id': self.incr_id.get(),
