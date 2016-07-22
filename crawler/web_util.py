@@ -77,7 +77,7 @@ def parse_curl_str(s, data_as_dict=False):
         return url, headers_dict, data_str
 
 
-def retry(retries=3, sleep=None):
+def retry(retries=3, sleep=CONFIG.CRAWLER.SLEEP):
     """一个失败请求重试，或者使用下边这个功能强大的retrying
     pip install retrying
     https://github.com/rholder/retrying

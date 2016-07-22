@@ -18,7 +18,6 @@ class LagouCrawler(object):
     """
     db = get_db('htmldb')
     col = getattr(db, 'lagou_html')    # collection
-    sleep = None
 
     def __init__(self, domain):
         self.domain = domain

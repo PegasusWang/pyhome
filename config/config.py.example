@@ -19,3 +19,4 @@ class CONFIG:
         PROXIES = {'http': 'socks5://127.0.0.1:9050',
                    'https': 'socks5://127.0.0.1:9050'}
         PROXIES_PASSWORD = ''
+        SLEEP = 3    # seconds or None no sleep
