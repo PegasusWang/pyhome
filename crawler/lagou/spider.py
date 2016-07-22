@@ -66,7 +66,7 @@ class LagouCrawler(object):
                     'url': url,
                 },
                 {
-                    '$set': {html: html}
+                    '$set': {'html': html}
                 },
                 upsert=True
             )
