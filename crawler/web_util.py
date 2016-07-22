@@ -7,11 +7,16 @@ chrome有个功能，对于请求可以直接右键copy as curl，然后在命�
 http://stackoverflow.com/questions/23118249/whats-the-difference-between-request-payload-vs-form-data-as-seen-in-chrome
 """
 
+import _env
+import os
 import re
 import time
 import traceback
 import requests
 from functools import wraps
+from tld import get_tld
+from config.config import CONFIG
+
 
 def encode_to_dict(encoded_str):
     """ 将encode后的数据拆成dict
@@ -122,3 +127,47 @@ def get(*args, **kwds):
     return _get(*args, **kwds)
 
 requests.get = get
+
+
+def lazy_property(fn):
+    attr_name = '_lazy_' + fn.__name__
+
+    @property
+    def _lazy_property(self):
+        if not hasattr(self, attr_name):
+            setattr(self, attr_name, fn(self))
+            return getattr(self, attr_name)
+    return _lazy_property
+
+
+def my_ip():
+    # url = 'https://api.ipify.org?format=json'
+    url = 'http://httpbin.org/ip'
+    return requests.get(url).text
+
+
+def form_data_to_dict(s):
+    """form_data_to_dict s是从chrome里边复制得到的form-data表单里的字符串，
+    注意*必须*用原始字符串r""
+
+    :param s: form-data string
+    """
+    arg_list = [line.strip() for line in s.split('\n')]
+    d = {}
+    for i in arg_list:
+        if i:
+            k = i.split(':', 1)[0].strip()
+            v = ''.join(i.split(':', 1)[1:]).strip()
+            d[k] = v
+    return d
+
+
+def change_ip():
+    os.system("""(echo authenticate '"%s"'; echo signal newnym; echo quit) | nc localhost 9051"""%CONFIG.CRAWLER.PROXIES_PASSWORD)
+    print(my_ip())
+
+change_tor_ip = change_ip
+
+
+def get_domain(url):
+    return get_tld(url)

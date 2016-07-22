@@ -3,6 +3,7 @@
 
 
 import _env
+from config.config import CONFIG
 from extract import extract_all
 from lib._db import get_db
 from utils import UrlManager, IncrId
@@ -32,6 +33,8 @@ class LagouCrawler(object):
 
     def get_response(self, url, **kwargs):
         _, headers, _ = parse_curl_str(self.curl_str)
+        if CONFIG.CRAWLER.USE_PROXY:
+            kwargs.setdefault('proxies', CONFIG.CRAWLER.PROXIES)
         return get(url, headers=headers, **kwargs)
 
     def url_nums(self):
