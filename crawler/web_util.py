@@ -147,6 +147,10 @@ def my_ip():
     return requests.get(url).text
 
 
+def my_socks5_ip():
+    cmd = """curl --socks5 127.0.01:9050 http://checkip.amazonaws.com/"""
+    os.system(cmd)
+
 def form_data_to_dict(s):
     """form_data_to_dict s是从chrome里边复制得到的form-data表单里的字符串，
     注意*必须*用原始字符串r""
@@ -164,11 +168,11 @@ def form_data_to_dict(s):
 
 
 def change_ip():
-    print('old_ip', my_ip())
+    my_socks5_ip()
     cmd = """(echo authenticate '"%s"'; echo signal newnym; echo quit) | nc localhost 9051"""%CONFIG.CRAWLER.PROXIES_PASSWORD
     print(cmd)
     os.system(cmd)
-    print('new_ip', my_ip())
+    my_socks5_ip()
 
 change_tor_ip = change_ip
 
