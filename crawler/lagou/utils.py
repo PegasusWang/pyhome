@@ -30,7 +30,8 @@ class UrlManager(object):
         """
         if isinstance(url, (list, tuple)):
             self.add_url_list(url)
-        return r.zadd(self.domain, self.incr_id.get(), url)
+        else:
+            r.zadd(self.domain, self.incr_id.get(), url)
 
     def add_url_list(self, url_list, chunks=1000):
         for chunk_url_list in self.chunks(url_list, chunks):
