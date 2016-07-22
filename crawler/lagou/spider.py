@@ -40,6 +40,7 @@ class LagouCrawler(object):
         _, headers, _ = parse_curl_str(self.curl_str)
         if CONFIG.CRAWLER.USE_PROXY:
             kwargs.setdefault('proxies', CONFIG.CRAWLER.PROXIES)
+        self.logger.info('now crawler: %s', url)
         return get(url, headers=headers, **kwargs)
 
     def url_nums(self):
@@ -70,7 +71,8 @@ class LagouCrawler(object):
             )
 
     def run(self):
-        self.add_url_list()
+        if not self.url_nums():
+            self.add_url_list()
 
         while self.url_nums() > 0:
             url = self.next_url()
