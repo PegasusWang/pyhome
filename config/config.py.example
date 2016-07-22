@@ -11,3 +11,11 @@ class CONFIG:
     class REDIS:
         HOST = ""
         PORT = 1234
+
+    class CRAWLER:
+        LIMIT = 50
+        # USE_PROXY = True
+        USE_PROXY = False
+        PROXIES = {'http': 'socks5://127.0.0.1:9050',
+                   'https': 'socks5://127.0.0.1:9050'}
+        PROXIES_PASSWORD = ''

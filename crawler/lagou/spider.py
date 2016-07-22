@@ -70,7 +70,6 @@ class LagouCrawler(object):
         )
 
     def run(self):
-        # 重试；入库；移除url；换ip, sleep
         self.add_url_list()
         while self.url_nums() > 0:
             url = self.next_url()
