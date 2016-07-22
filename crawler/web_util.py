@@ -165,7 +165,9 @@ def form_data_to_dict(s):
 
 def change_ip():
     print('old_ip', my_ip())
-    os.system("""(echo authenticate '"%s"'; echo signal newnym; echo quit) | nc localhost 9051"""%CONFIG.CRAWLER.PROXIES_PASSWORD)
+    cmd = """(echo authenticate '"%s"'; echo signal newnym; echo quit) | nc localhost 9051"""%CONFIG.CRAWLER.PROXIES_PASSWORD
+    print(cmd)
+    os.system(cmd)
     print('new_ip', my_ip())
 
 change_tor_ip = change_ip
