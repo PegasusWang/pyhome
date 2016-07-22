@@ -174,6 +174,7 @@ def change_ip():
     os.system(cmd)
     my_socks5_ip()
 
+
 change_tor_ip = change_ip
 
 
