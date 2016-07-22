@@ -102,7 +102,8 @@ def retry(retries=3, sleep=None):
                     change_ip()
 
                 if sleep is not None:
-                    time.sleep(sleep)
+                    time.sleep(sleep*index)
+
             return response
         return _wrapper
     return _retry
