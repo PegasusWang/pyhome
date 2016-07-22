@@ -3,6 +3,7 @@
 
 
 import _env
+from pprint import pformat
 from config.config import CONFIG
 from extract import extract_all
 from lib._db import get_db
@@ -26,10 +27,13 @@ class LagouCrawler(object):
         self.url_manager.add_url(url)
 
     def add_url_list(self):
-        for i in range(1, 171):
+        # for i in range(1, 171):
+        for i in range(1, 2):
             url = 'http://www.lagou.com/upload/sitemap/xml/lagou_sitemap_%d.xml'%i
             html = self.get_response(url).text
             all_loc_url = extract_all('<loc>', '</loc>', html)
+            all_loc_url = all_loc_url[0:3]
+            self.logger.info('%s', pformat(all_loc_url))
             self.add_url(all_loc_url)
 
     def get_response(self, url, **kwargs):
