@@ -10,6 +10,7 @@ http://stackoverflow.com/questions/23118249/whats-the-difference-between-request
 import _env
 import os
 import re
+import logging
 import time
 import traceback
 import requests

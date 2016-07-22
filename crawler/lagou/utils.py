@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from lib._db import redis_cliet as r
+from lib._db import redis_client as r
 
 
 class IncrId(object):
