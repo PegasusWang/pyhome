@@ -4,7 +4,7 @@ class CONFIG:
     class MONGO:
         HOST = ""
         DATABASE = ""
-        PORT =
+        PORT = 27017
         USERNAME = ""
         PASSWORD = ""
 
@@ -20,3 +20,4 @@ class CONFIG:
                    'https': 'socks5://127.0.0.1:9050'}
         PROXIES_PASSWORD = ''
         SLEEP = 3    # seconds or None no sleep
+        RETRY = 3
