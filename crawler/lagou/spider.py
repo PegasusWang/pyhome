@@ -27,6 +27,9 @@ class LagouCrawler(object):
     def add_url(self, url):
         self.url_manager.add_url(url)
 
+    def delay_url(self, url, nums=10):
+        self.url_manager.delay(url, nums)
+
     def add_url_list(self):
         for i in range(1, 532):
             url = 'http://www.lagou.com/upload/sitemap/xml/lagou_sitemap_%d.xml'%i
@@ -76,10 +79,14 @@ class LagouCrawler(object):
 
         while self.url_nums() > 0:
             url = self.next_url()
-            r = self.get_response(url)
-            html = r.text
-            self.save_html(url, html)
-            self.remove_url(url)
+            if url is not None:
+                r = self.get_response(url)
+                if not r:
+                    self.delay_url(url)
+                    continue
+                html = r.text
+                self.save_html(url, html)
+                self.remove_url(url)
 
 
 def main():

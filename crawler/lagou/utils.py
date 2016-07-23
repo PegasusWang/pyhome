@@ -68,3 +68,12 @@ class UrlManager(object):
     def last_url(self):
         rl = r.zrange(self.domain_zset, -1, -1)    # max score
         return rl[0] if rl else None
+
+    def delay_url(self, url, nums):
+        """delay_url 给当前url增加score使得改url延后抓取
+
+        :param url: url as redis zset key
+        :param nums: 推迟多少个url以后抓取
+        :return: new int score
+        """
+        return int(r.zincrby(self.domain_zset, nums, url))
