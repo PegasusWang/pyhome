@@ -5,6 +5,7 @@ from lib._db import redis_client as r
 
 
 class IncrId(object):
+    """IncrId 用redis实现的简单的自增id"""
     def __init__(self, key):
         self.key = '_'.join([key, self.__class__.__name__])
 
