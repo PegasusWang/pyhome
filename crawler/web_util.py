@@ -93,8 +93,8 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP):
                 index += 1
                 try:
                     response = func(*args, **kwargs)
-                    if response.status_code == 404:
-                        print(404)
+                    if response.status_code in (301, 302, 404, 500):
+                        print('status_code', response.status_code)
                         break
                     elif response.status_code != 200:
                         print(response.status_code)
