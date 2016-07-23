@@ -15,6 +15,7 @@ import time
 import traceback
 import requests
 from functools import wraps
+from random import randint
 from tld import get_tld
 from config.config import CONFIG
 
@@ -108,7 +109,7 @@ def retry(retries=3, sleep=CONFIG.CRAWLER.SLEEP):
                     change_ip()
 
                 if sleep is not None:
-                    time.sleep(sleep*index)
+                    time.sleep(sleep*index + randint(1, 10))
 
             return response
         return _wrapper
