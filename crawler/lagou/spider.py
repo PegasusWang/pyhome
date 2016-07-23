@@ -3,6 +3,8 @@
 
 
 import _env
+import threading
+import random
 from pprint import pformat
 from config.config import CONFIG
 from extract import extract_all
@@ -82,7 +84,14 @@ class LagouCrawler(object):
             self.remove_url(url)
 
 
+def periodic_change_ip(low, high):
+    seconds = random.randint(low, high)
+    threading.Timer(seconds, periodic_change_ip).start()
+    change_ip()
+
+
 def main():
+    periodic_change_ip(30, 60)
     lagou_crawler = LagouCrawler('lagou.com')
     lagou_crawler.run()
 
