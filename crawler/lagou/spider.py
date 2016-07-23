@@ -84,14 +84,14 @@ class LagouCrawler(object):
             self.remove_url(url)
 
 
-def periodic_change_ip(low, high):
-    seconds = random.randint(low, high)
+def periodic_change_ip():
+    seconds = random.randint(30, 60)
     threading.Timer(seconds, periodic_change_ip).start()
     change_ip()
 
 
 def main():
-    periodic_change_ip(30, 60)
+    periodic_change_ip()
     lagou_crawler = LagouCrawler('lagou.com')
     lagou_crawler.run()
 
