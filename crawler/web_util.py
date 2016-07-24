@@ -13,6 +13,8 @@ import re
 import logging
 import time
 import traceback
+
+import coloredlogs
 import requests
 from functools import wraps
 from random import randint
@@ -188,6 +190,7 @@ def logged(class_):
 
     :param class_: add 'logger' attribute to class
     """
+    coloredlogs.install()
     logging.getLogger("requests").setLevel(logging.WARNING)
     logging.basicConfig(level=logging.INFO, format='%(message)s')
     class_.logger = logging.getLogger(class_.__name__)
