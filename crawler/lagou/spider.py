@@ -28,7 +28,7 @@ class LagouCrawler(object):
         self.url_manager.add_url(url)
 
     def delay_url(self, url, nums=10):
-        self.url_manager.delay(url, nums)
+        self.url_manager.delay_url(url, nums)
 
     def add_url_list(self):
         for i in range(1, 532):
