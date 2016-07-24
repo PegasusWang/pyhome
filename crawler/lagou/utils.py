@@ -77,4 +77,4 @@ class UrlManager(object):
         :param nums: 推迟多少个url以后抓取
         :return: new int score
         """
-        return int(r.zincrby(self.domain_zset, nums, url))
+        return int(r.zincrby(self.domain_zset, url, amount=nums))
