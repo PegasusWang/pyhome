@@ -9,7 +9,7 @@ from extract import extract_all
 from lib._db import get_db
 from utils import UrlManager, IncrId
 from web_util import (
-    parse_curl_str, change_ip, get, logged, cookie_dict_from_cookie_str
+    parse_curl_str, change_ip, get, logged, cookie_dict_from_cookie_str,
     CurlStrParser,
 )
 
