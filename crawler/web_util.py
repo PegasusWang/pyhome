@@ -170,13 +170,11 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
                     traceback.print_exc()
                     response = None
                     if isinstance(e, Timeout):
+                        if sleep is not None:
+                            time.sleep(randint(1, 5))
                         continue
                     elif isinstance(e, TooManyRedirects):
-                        if changeip:
-                            change_ip()
-
-                if sleep is not None:
-                    time.sleep(sleep*index + randint(1, 10))
+                        change_ip()
 
             return response
         return _wrapper
