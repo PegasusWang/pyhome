@@ -16,7 +16,6 @@ import traceback
 
 import coloredlogs
 import requests
-from http.cookies import SimpleCookie
 from functools import wraps
 from random import randint
 from tld import get_tld
@@ -24,9 +23,13 @@ from config.config import CONFIG
 try:    # py3
     from urllib.parse import urlparse, quote, urlencode, unquote
     from urllib.request import urlopen
-except:    # py2
+except ImportError:    # py2
     from urllib import urlencode, quote, unquote
     from urllib2 import urlopen
+try:
+    from http.cookies import SimpleCookie
+except ImportError:    # py2
+    from Cookie import SimpleCookie
 
 
 def encode_to_dict(encoded_str):
