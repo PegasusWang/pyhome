@@ -16,10 +16,17 @@ import traceback
 
 import coloredlogs
 import requests
+from http.cookies import SimpleCookie
 from functools import wraps
 from random import randint
 from tld import get_tld
 from config.config import CONFIG
+try:    # py3
+    from urllib.parse import urlparse, quote, urlencode, unquote
+    from urllib.request import urlopen
+except:    # py2
+    from urllib import urlencode, quote, unquote
+    from urllib2 import urlopen
 
 
 def encode_to_dict(encoded_str):
@@ -80,7 +87,57 @@ def parse_curl_str(s, data_as_dict=False):
         return url, headers_dict, data_str
 
 
-def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP):
+class CurlStrParser(object):
+    def __init__(self, s):
+        self.s = s
+
+    def parse_curl_str(self, data_as_dict=False):
+        s = self.s
+        s = s.strip('\n').strip()
+        pat = re.compile("'(.*?)'")
+        str_list = [i.strip() for i in re.split(pat, s)]   # 拆分curl请求字符串
+
+        url = ''
+        headers_dict = {}
+        data_str = ''
+
+        for i in range(0, len(str_list)-1, 2):
+            arg = str_list[i]
+            string = str_list[i+1]
+
+            if arg.startswith('curl'):
+                url = string
+
+            elif arg.startswith('-H'):
+                header_key = string.split(':', 1)[0].strip()
+                header_val = string.split(':', 1)[1].strip()
+                headers_dict[header_key] = header_val
+
+            elif arg.startswith('--data'):
+                data_str = string
+
+        if data_as_dict:
+            data_dict = {}
+            pair_list = unquote(data_str).split('&')
+            for pair in pair_list:
+                k, v = pair.split('=')
+                data_dict[k] = v
+            return url, headers_dict, data_dict
+        else:
+            return url, headers_dict, data_str
+
+    def get_url(self):
+        return self.parse_curl_str()[0]
+
+    def get_headers_dict(self):
+        return self.parse_curl_str()[1]
+
+    def get_data(self, as_dict=False):
+        return self.parse_curl_str()[2]
+
+
+def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
+          changeip=False):
     """一个失败请求重试，或者使用下边这个功能强大的retrying
     pip install retrying
     https://github.com/rholder/retrying
@@ -100,7 +157,8 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP):
                         break
                     elif response.status_code != 200:
                         print(response.status_code)
-                        change_ip()
+                        if changeip:
+                            change_ip()
                         continue
                     else:
                         break
@@ -108,7 +166,8 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP):
                     traceback.print_exc()
                     print('change ip')
                     response = None
-                    change_ip()
+                    if changeip:
+                        change_ip()
 
                 if sleep is not None:
                     time.sleep(sleep*index + randint(1, 10))
@@ -154,6 +213,7 @@ def my_socks5_ip():
     cmd = """curl --socks5 127.0.01:9050 http://checkip.amazonaws.com/"""
     os.system(cmd)
 
+
 def form_data_to_dict(s):
     """form_data_to_dict s是从chrome里边复制得到的form-data表单里的字符串，
     注意*必须*用原始字符串r""
@@ -195,3 +255,15 @@ def logged(class_):
     logging.basicConfig(level=logging.INFO, format='%(message)s')
     class_.logger = logging.getLogger(class_.__name__)
     return class_
+
+
+def cookie_dict_from_response(r):
+    """cookie_dict_from_response 获取返回的response对象的Set-Cookie字符串
+    并返回成dict
+
+    :param r: requests.models.Response
+    """
+    cookie_str = r.headers.get('Set-Cookie')
+    cookie = SimpleCookie()
+    cookie.load(cookie_str)
+    return {key: morsel.value for key, morsel in cookie.items()}
