@@ -49,7 +49,7 @@ class LagouCrawler(object):
         if changeip:
             change_ip()
         r = get(self.base_url)
-        h = cookie_dict_from_response(r.headers.get('Set-Cookie'))
+        h = cookie_dict_from_cookie_str(r.headers.get('Set-Cookie'))
         cookies_dict = cookie_dict_from_cookie_str(self.headers['Cookie'])
         cookies_dict.update(h)
         self.headers['Cookie'] = cookies_dict
