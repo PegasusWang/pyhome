@@ -19,6 +19,7 @@ import requests
 from functools import wraps
 from random import randint
 from tld import get_tld
+from requests.exceptions import TooManyRedirects, Timeout
 from config.config import CONFIG
 try:    # py3
     from urllib.parse import urlparse, quote, urlencode, unquote
@@ -168,8 +169,11 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
                 except Exception as e:
                     traceback.print_exc()
                     response = None
-                    if changeip:
-                        change_ip()
+                    if isinstance(e, Timeout):
+                        continue
+                    elif isinstance(e, TooManyRedirects):
+                        if changeip:
+                            change_ip()
 
                 if sleep is not None:
                     time.sleep(sleep*index + randint(1, 10))
