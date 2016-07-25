@@ -51,8 +51,8 @@ class LagouCrawler(object):
             change_ip()
         r = get(self.base_url)
         h = cookie_dict_from_response(r)
-        self.logger.info('cookie', pformat(h))
         self.headers['Cookie'] = h
+        self.logger.info('headers: %s', pformat(self.headers))
 
     def get_response(self, url, **kwargs):
         if CONFIG.CRAWLER.USE_PROXY:
