@@ -51,7 +51,7 @@ class LagouCrawler(object):
             change_ip()
         r = get(self.base_url)
         h = cookie_dict_from_response(r)
-        self.headers['Cookie'] = h
+        self.headers['Cookie'].update(h)
         self.logger.info('headers: %s', pformat(self.headers))
 
     def get_response(self, url, **kwargs):

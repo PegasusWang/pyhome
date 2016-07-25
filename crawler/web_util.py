@@ -167,7 +167,6 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
                         break
                 except Exception as e:
                     traceback.print_exc()
-                    print('change ip')
                     response = None
                     if changeip:
                         change_ip()
