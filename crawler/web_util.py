@@ -174,7 +174,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
                             time.sleep(randint(1, 5))
                         continue
                     elif isinstance(e, TooManyRedirects):
-                        change_ip()
+                        break
 
             return response
         return _wrapper
