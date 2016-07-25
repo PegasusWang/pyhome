@@ -91,6 +91,8 @@ class LagouCrawler(object):
         if not self.url_nums():
             self.add_url_list()
 
+        self.update_headers()
+
         while self.url_nums() > 0:
             url = self.next_url()
             if url is not None:
