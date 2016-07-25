@@ -9,7 +9,7 @@ from extract import extract_all
 from lib._db import get_db
 from utils import UrlManager, IncrId
 from web_util import (
-    parse_curl_str, change_ip, get, logged, cookie_dict_from_response,
+    parse_curl_str, change_ip, get, logged, cookie_dict_from_cookie_str
     CurlStrParser,
 )
 
@@ -50,8 +50,10 @@ class LagouCrawler(object):
         if changeip:
             change_ip()
         r = get(self.base_url)
-        h = cookie_dict_from_response(r)
-        self.headers['Cookie'].update(h)
+        h = cookie_dict_from_response(r.headers.get('Set-Cookie'))
+        cookies_dict = cookie_dict_from_cookie_str(self.headers['Cookie'])
+        cookies_dict.update(h)
+        self.headers['Cookie'] = cookies_dict
         self.logger.info('headers: %s', pformat(self.headers))
 
     def get_response(self, url, **kwargs):

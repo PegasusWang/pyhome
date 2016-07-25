@@ -259,13 +259,13 @@ def logged(class_):
     return class_
 
 
-def cookie_dict_from_response(r):
+def cookie_dict_from_cookie_str(cookie_str):
     """cookie_dict_from_response 获取返回的response对象的Set-Cookie字符串
     并返回成dict
 
     :param r: requests.models.Response
     """
-    cookie_str = r.headers.get('Set-Cookie')
+    # cookie_str = r.headers.get('Set-Cookie')
     cookie = SimpleCookie()
     cookie.load(cookie_str)
     return {key: morsel.value for key, morsel in cookie.items()}
