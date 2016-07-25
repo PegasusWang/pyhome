@@ -22,7 +22,8 @@ class LagouCrawler(object):
     """
     db = get_db('htmldb')
     col = getattr(db, 'lagou_html')    # collection
-    header = CurlStrParser(curl_str).get_headers_dict()
+    base_url = CurlStrParser(curl_str).get_url()
+    headers = CurlStrParser(curl_str).get_headers_dict()
 
     def __init__(self, domain):
         self.domain = domain
@@ -48,8 +49,8 @@ class LagouCrawler(object):
     def update_headers(self, changeip=True):
         if changeip:
             change_ip()
-            #TODO
-
+        r = get(self.base_url)
+        self.headers['Cookie'] = cookie_dict_from_response(r)
 
     def get_response(self, url, **kwargs):
         if CONFIG.CRAWLER.USE_PROXY:
@@ -94,6 +95,7 @@ class LagouCrawler(object):
                 r = self.get_response(url)
                 if not r:
                     self.delay_url(url)
+                    self.update_headers()
                     continue
                 html = r.text
                 self.save_html(url, html)
