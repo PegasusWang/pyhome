@@ -21,3 +21,5 @@ celery
 celery[redis]
 tld
 coloredlogs==5.0
+future
+futures
