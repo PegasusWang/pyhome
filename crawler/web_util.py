@@ -279,3 +279,18 @@ def cookie_dict_from_response(r):
     """
     cookie_str = r.headers.get('Set-Cookie')
     return cookie_dict_from_cookie_str(cookie_str)
+
+
+def get_proxy_dict(ip, port, proxy_type='http' or 'socks5'):
+    """get_proxy_dict return dict proxies as requests proxies
+    http://docs.python-requests.org/en/master/user/advanced/
+
+    :param ip: ip string
+    :param port: int port
+    :param proxy_type: 'http' or 'socks5'
+    """
+    proxies = {
+        'http': '{proxy_type}://{ip}:{port}'.format(proxy_type=proxy_type, ip=ip, port=port),
+        'https': '{proxy_type}://{ip}:{port}'.format(proxy_type=proxy_type, ip=ip, port=port),
+    }
+    return proxies
