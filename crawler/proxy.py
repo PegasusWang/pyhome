@@ -6,12 +6,15 @@ import re
 from io import open
 from collections import namedtuple
 from pprint import pprint
-from web_util import get
+
 from html_parser import Bs4HtmlParser
+from web_util import get
+from thread_pool_spider import ThreadPoolCrawler
 
 
 class XiciHtmlParser(Bs4HtmlParser):
     # url = 'http://www.xicidaili.com/'
+
     fields = """country, ip, port, address, anonymous, type,
     speed, connect_time, live_time, verify_time"""
     fields_list = [i.strip() for i in fields.split(',')]
@@ -46,8 +49,7 @@ class XiciHtmlParser(Bs4HtmlParser):
             yield self.pat.sub('', value)
 
     def parse(self):
-        bs = self.bs
-        table_tag = bs.find('table', id='ip_list')
+        table_tag = self.bs.find('table', id='ip_list')
         tr_tags = table_tag.find_all('tr')
 
         for tr_tag in tr_tags:
@@ -59,16 +61,32 @@ class XiciHtmlParser(Bs4HtmlParser):
                 yield ip_info_texts._asdict()
 
 
+class XiciCrawler(ThreadPoolCrawler):
+    db = ''
+    col = ''
+
+    def init_urls(self):
+        url = 'http://www.xicidaili.com/nn/%d'
+        for i in range(1, 960):
+            self.urls.append(url % i)
+
+    def handle_response(self, url, response):
+        if response.status_code == 200:
+            html = response.text
+            html_parser = XiciHtmlParser(url, html)
+            ip_info_dict_list = html_parser.parse()
+
+            self.col.update()    # TODO: save ip info to mongodb
+
 def test():
     url = 'http://www.xicidaili.com/nn'
-    #html = get(url).text
+    # html = get(url).text
     with open('./t.html', encoding='utf-8') as f:
         html = f.read()
         x = XiciHtmlParser(url, html)
         l = list(x.parse())
         for i in l:
             print(i)
-
 
 
 if __name__ == '__main__':

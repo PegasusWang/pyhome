@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from queue import Queue
 import sys
 import threading
 import time
+from queue import Queue
 
 import concurrent.futures
 import bs4
 import requests
+from web_util import logged, get
 
 
 class Worker(threading.Thread):    # 处理工作请求
@@ -81,18 +82,25 @@ def test_work():
     print time.time() - _st
 
 
+@logged
 class ThreadPoolCrawler(object):
-    def __init__(self, urls, concurrency=20, **kwargs):
-        self.urls = urls
+    def __init__(self, urls=None, concurrency=20, **kwargs):
+        self.urls = urls or []
+        if not self.urls:
+            self.init_urls()
         self.concurrency = min(concurrency, len(urls))
         self.results = []
+
+    def init_urls(self):
+        """init_urls: assign url list to self.urls"""
+        raise NotImplementedError
 
     def handle_response(self, url, response):
         print(url)
         print(response.status_code)
 
     def get(self, *args, **kwargs):
-        return requests.get(*args, **kwargs)
+        return get(*args, **kwargs)    # use web_util get
 
     def run(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
