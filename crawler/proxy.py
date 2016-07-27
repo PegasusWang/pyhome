@@ -11,7 +11,7 @@ from pprint import pprint
 from lib._db import get_db
 from html_parser import Bs4HtmlParser
 from thread_pool_spider import ThreadPoolCrawler
-from web_util import get, logged, change_ip
+from web_util import get, logged, change_ip, get_proxy_dict, chunks
 
 
 class XiciHtmlParser(Bs4HtmlParser):
@@ -124,9 +124,36 @@ class CheckXiciCralwer(ThreadPoolCrawler):
 
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
+    timeout = 10    # 测试超时时间
 
     def init_urls(self):
         """init_urls get all ip proxy from monggo"""
+        url = 'http://www.baidu.com'
+        for ip_info in self.col.find(no_cursor_timeout=True):
+            ip, port = ip_info['ip'], ip_info['port']
+            if ip and port:
+                self.urls.append(url, ip, port)
+
+    def run_async(self):
+        for url_list in chunks(self.urls, 100):
+            with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
+                future_to_url = {
+                    executor.submit(
+                        self.get, url, proxies=get_proxy_dict(ip, int(port))
+                    ): url
+                    for (url, ip, port) in url_list
+                }
+                for future in concurrent.futures.as_completed(future_to_url):
+                    url = future_to_url[future]
+                    try:
+                        response = future.result()
+                    except Exception as e:
+                        # import traceback
+                        # traceback.print_exc()
+                        print(e)
+                    else:
+                        self.handle_response(url, response)
+
 
 
     def handle_response(self, url, response):

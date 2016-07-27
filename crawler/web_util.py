@@ -296,6 +296,11 @@ def get_proxy_dict(ip, port, proxy_type='http' or 'socks5'):
     return proxies
 
 
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i+n]
+
 
 def tets():
     url = 'http://www.xicidaili.com/'
