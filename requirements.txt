@@ -4,7 +4,6 @@ redis
 tornado-redis
 simplejson
 requests>=2.10.0
-requests[socks]
 jieba
 beautifulsoup4
 html2text
