@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
+import _env
 import re
 from io import open
 from collections import namedtuple
 from pprint import pprint
 
+from lib._db import get_db
 from html_parser import Bs4HtmlParser
-from web_util import get
 from thread_pool_spider import ThreadPoolCrawler
+from web_util import get
 
 
 class XiciHtmlParser(Bs4HtmlParser):
@@ -49,6 +51,11 @@ class XiciHtmlParser(Bs4HtmlParser):
             yield self.pat.sub('', value)
 
     def parse(self):
+        """parse
+
+        :yields: many OrderedDict
+        OrderedDict([('country', 'Cn'), ('ip', u'115.46.80.120'), ('port', u'8123'), ('address', u'\u5e7f\u897f\u5357\u5b81'), ('anonymous', u'\u9ad8\u533f'), ('type', u'HTTP'), ('speed', u'3.687\u79d2'), ('connect_time', u'0.737\u79d2'), ('live_time', u'1\u5206\u949f'), ('verify_time', u'16-07-26 10:54')])
+        """
         table_tag = self.bs.find('table', id='ip_list')
         tr_tags = table_tag.find_all('tr')
 
@@ -62,21 +69,51 @@ class XiciHtmlParser(Bs4HtmlParser):
 
 
 class XiciCrawler(ThreadPoolCrawler):
-    db = ''
-    col = ''
+
+    db = get_db('htmldb')
+    col = getattr(db, 'xici_proxy')    # collection
 
     def init_urls(self):
         url = 'http://www.xicidaili.com/nn/%d'
-        for i in range(1, 960):
+        # for i in range(1, 960):
+        for i in range(1, 2):
             self.urls.append(url % i)
 
+    def bulk_update_to_mongo(self, ip_dict_list):
+        """bulk_update_to_mongo
+
+        :param ip_dict_list:
+        OrderedDict([('country', 'Cn'), ('ip', u'115.46.80.120'), ('port', u'8123'), ('address', u'\u5e7f\u897f\u5357\u5b81'), ('anonymous', u'\u9ad8\u533f'), ('type', u'HTTP'), ('speed', u'3.687\u79d2'), ('connect_time', u'0.737\u79d2'), ('live_time', u'1\u5206\u949f'), ('verify_time', u'16-07-26 10:54')])
+        """
+        bulk = self.col.initialize_ordered_bulk_op()
+        for ip_info_dict in ip_dict_list:
+            bulk.update(
+                # TODO
+            )
+        bulk.execute()
+
     def handle_response(self, url, response):
+        """handle_response 把代理ip的信息存储到mongodb中
+
+        :param url:
+        :param response: requests.models.Response
+        """
         if response.status_code == 200:
             html = response.text
             html_parser = XiciHtmlParser(url, html)
-            ip_info_dict_list = html_parser.parse()
+            ip_info_dict_yield = html_parser.parse()
+            self.bulk_update_to_mongo(ip_info_dict_yield)
 
-            self.col.update()    # TODO: save ip info to mongodb
+
+class CheckXiciCralwer(ThreadPoolCrawler):
+    """CheckXiciCralwer 用来测试代理的有效性，及时剔除没用的代理"""
+
+    def init_urls(self):
+        """init_urls get all ip proxy from monggo"""
+
+    def handle_response(self, url, response):
+        """handle_response 验证代理的合法性。通过发送简单请求检测是否超时"""
+
 
 def test():
     url = 'http://www.xicidaili.com/nn'
