@@ -84,11 +84,12 @@ def test_work():
 
 @logged
 class ThreadPoolCrawler(object):
+
     def __init__(self, urls=None, concurrency=20, **kwargs):
         self.urls = urls or []
         if not self.urls:
             self.init_urls()
-        self.concurrency = min(concurrency, len(urls))
+        self.concurrency = min(concurrency, len(self.urls))
         self.results = []
 
     def init_urls(self):
@@ -102,7 +103,7 @@ class ThreadPoolCrawler(object):
     def get(self, *args, **kwargs):
         return get(*args, **kwargs)    # use web_util get
 
-    def run(self):
+    def run_async(self):
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
             future_to_url = {
                 executor.submit(self.get, url): url for url in self.urls
@@ -117,6 +118,24 @@ class ThreadPoolCrawler(object):
                     print(e)
                 else:
                     self.handle_response(url, response)
+
+    def run_sync(self):
+        for url in self.urls:
+            try:
+                response = self.get(url)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+            else:
+                self.handle_response(url, response)
+            if self.sleep:
+                time.sleep(self.sleep)
+
+    def run(self, use_thread=True):
+        if use_thread:
+            self.run_async()
+        else:
+            self.run_sync()
 
 
 class TestCrawler(ThreadPoolCrawler):

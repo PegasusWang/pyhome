@@ -11,7 +11,7 @@ from pprint import pprint
 from lib._db import get_db
 from html_parser import Bs4HtmlParser
 from thread_pool_spider import ThreadPoolCrawler
-from web_util import get
+from web_util import get, logged
 
 
 class XiciHtmlParser(Bs4HtmlParser):
@@ -68,15 +68,16 @@ class XiciHtmlParser(Bs4HtmlParser):
                 yield ip_info_texts._asdict()
 
 
+@logged
 class XiciCrawler(ThreadPoolCrawler):
 
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
+    sleep = 3
 
     def init_urls(self):
         url = 'http://www.xicidaili.com/nn/%d'
-        # for i in range(1, 960):
-        for i in range(1, 2):
+        for i in range(1, 960):
             self.urls.append(url % i)
 
     def bulk_update_to_mongo(self, ip_dict_list):
@@ -87,10 +88,18 @@ class XiciCrawler(ThreadPoolCrawler):
         """
         bulk = self.col.initialize_ordered_bulk_op()
         for ip_info_dict in ip_dict_list:
-            bulk.update(
-                # TODO
-            )
+            self.logger.info('%s', ip_info_dict['ip'])
+            query_dict = {
+                'ip': ip_info_dict['ip'],
+                'port': ip_info_dict['port'],
+            }
+            update_dict = {
+                '$set': ip_info_dict
+            }
+            bulk.find(query_dict).upsert().update(update_dict)
+
         bulk.execute()
+        self.logger.info('count %d', self.col.count())
 
     def handle_response(self, url, response):
         """handle_response 把代理ip的信息存储到mongodb中
@@ -98,7 +107,8 @@ class XiciCrawler(ThreadPoolCrawler):
         :param url:
         :param response: requests.models.Response
         """
-        if response.status_code == 200:
+        self.logger.info('handle url: %s', url)
+        if response and response.status_code == 200:
             html = response.text
             html_parser = XiciHtmlParser(url, html)
             ip_info_dict_yield = html_parser.parse()
@@ -126,5 +136,10 @@ def test():
             print(i)
 
 
+def main():
+    xici_crawler = XiciCrawler()
+    xici_crawler.run(use_thread=False)
+
 if __name__ == '__main__':
-    test()
+    # test()
+    main()
