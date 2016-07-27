@@ -11,7 +11,7 @@ from pprint import pprint
 from lib._db import get_db
 from html_parser import Bs4HtmlParser
 from thread_pool_spider import ThreadPoolCrawler
-from web_util import get, logged
+from web_util import get, logged, change_ip
 
 
 class XiciHtmlParser(Bs4HtmlParser):
@@ -108,18 +108,26 @@ class XiciCrawler(ThreadPoolCrawler):
         :param response: requests.models.Response
         """
         self.logger.info('handle url: %s', url)
-        if response and response.status_code == 200:
+        if not response:
+            return
+        if response.status_code == 200:
             html = response.text
             html_parser = XiciHtmlParser(url, html)
             ip_info_dict_yield = html_parser.parse()
             self.bulk_update_to_mongo(ip_info_dict_yield)
+        elif response.status_code == 503:
+            change_ip()
 
 
 class CheckXiciCralwer(ThreadPoolCrawler):
     """CheckXiciCralwer 用来测试代理的有效性，及时剔除没用的代理"""
 
+    db = get_db('htmldb')
+    col = getattr(db, 'xici_proxy')    # collection
+
     def init_urls(self):
         """init_urls get all ip proxy from monggo"""
+
 
     def handle_response(self, url, response):
         """handle_response 验证代理的合法性。通过发送简单请求检测是否超时"""

@@ -294,3 +294,14 @@ def get_proxy_dict(ip, port, proxy_type='http' or 'socks5'):
         'https': '{proxy_type}://{ip}:{port}'.format(proxy_type=proxy_type, ip=ip, port=port),
     }
     return proxies
+
+
+
+def tets():
+    url = 'http://www.xicidaili.com/'
+    r = get(url)
+    assert r.status_code == 200
+
+
+if __name__ == '__main__':
+    main()
