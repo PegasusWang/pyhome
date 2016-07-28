@@ -45,7 +45,7 @@ class XiciHtmlParser(Bs4HtmlParser):
             else:
                 func_name = 'extract_tag_' + 'default'
             try:
-                value = getattr(self, func_name)(tag)
+                value = getattr(self, func_name)(tag).strip()
             except Exception as e:
                 print(e)
                 value = ''
@@ -138,7 +138,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                 self.urls.append((url, ip, port))    # tuple
 
     def run_async(self):
-        for url_list in chunks(self.urls, 2):    # handle 100 every times
+        for url_list in chunks(self.urls, 10):    # handle 100 every times
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
                 future_to_url = {
                     executor.submit(
