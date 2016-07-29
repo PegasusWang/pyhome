@@ -13,8 +13,7 @@ class Bs4HtmlParser(object):
 
     def __init__(self, url, html):
         self.url = url
-        self.html = html
-        self.pat.sub('', html)
+        self.html = self.pat.sub('', html)
         self.bs = BeautifulSoup(html, 'lxml')
 
     def parse(self):

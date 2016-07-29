@@ -145,6 +145,8 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
     """一个失败请求重试，或者使用下边这个功能强大的retrying
     pip install retrying
     https://github.com/rholder/retrying
+    文章：常见的爬虫策略
+    http://mp.weixin.qq.com/s?__biz=MzAwMDU1MTE1OQ==&mid=2653547274&idx=1&sn=52e5037b163146c1656eedce2da1ecd8&scene=1&srcid=0527MEXhNRZATtlTPhinD5Re#rd
 
     :param retries: number int of retry times.
     """
@@ -171,7 +173,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
                     response = None
                     if isinstance(e, Timeout):
                         if sleep is not None:
-                            time.sleep(randint(1, 5))
+                            time.sleep(sleep + randint(1, 10))
                         continue
                     elif isinstance(e, TooManyRedirects):
                         break
