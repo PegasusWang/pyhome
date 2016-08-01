@@ -310,5 +310,11 @@ def tets():
     assert r.status_code == 200
 
 
+def sleeper(base=2, index=1, max_sleep=180):
+    """ sleeper 2, 2^2, 2^3 ...  """
+    sleep_time = min(base ** index, max_sleep)
+    time.sleep(sleep_time)
+
+
 if __name__ == '__main__':
     main()
