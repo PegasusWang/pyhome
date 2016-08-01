@@ -149,6 +149,13 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
     http://mp.weixin.qq.com/s?__biz=MzAwMDU1MTE1OQ==&mid=2653547274&idx=1&sn=52e5037b163146c1656eedce2da1ecd8&scene=1&srcid=0527MEXhNRZATtlTPhinD5Re#rd
 
     :param retries: number int of retry times.
+    301 Moved Temporarily
+    401 Unauthorized
+    403 Forbidden
+    404 Not Found
+    408 Request Timeout
+    429 Too Many Requests
+    503 Service Unavailable
     """
     def _retry(func):
         @wraps(func)

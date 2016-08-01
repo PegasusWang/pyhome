@@ -6,6 +6,7 @@ import _env
 from pprint import pformat
 from config.config import CONFIG
 from extract import extract_all
+from html_parser import Bs4HtmlParser
 from lib._db import get_db
 from utils import UrlManager, IncrId
 from web_util import (
