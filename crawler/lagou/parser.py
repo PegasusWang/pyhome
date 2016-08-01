@@ -21,6 +21,7 @@ class LagouHtmlParser(Bs4HtmlParser):
 
     def parse(self):
     # TODO 职位信息的获取，定义好字段
+        pass
 
 if __name__ == '__main__':
     pass
