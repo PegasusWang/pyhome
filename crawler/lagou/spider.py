@@ -6,7 +6,7 @@ import _env
 from pprint import pformat
 from config.config import CONFIG
 from extract import extract_all
-from html_parser import Bs4HtmlParser
+from bs4 import BeautifulSoup
 from lib._db import get_db
 from utils import UrlManager, IncrId
 from web_util import (
@@ -75,6 +75,10 @@ class LagouCrawler(object):
         self.logger.info('remove url: %s', url)
         return self.url_manager.remove_url(url)
 
+    def is_check_html(self, html):
+        title_text = (BeautifulSoup(html, 'lxml').find('title')).text or None
+        return title_text == '访问验证-拉勾网'
+
     def save_html(self, url, html):
         self.logger.info('save html of url: %s', url)
         if html:
@@ -103,9 +107,14 @@ class LagouCrawler(object):
                     self.delay_url(url)
                     self.update_headers()
                     continue
+
                 html = r.text
-                self.save_html(url, html)
-                self.remove_url(url)
+                if not self.is_check_html(html):
+                    self.save_html(url, html)
+                    self.remove_url(url)
+                else:
+                    print('验证码页面')
+                    break
 
 
 def main():
