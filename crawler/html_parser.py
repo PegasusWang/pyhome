@@ -14,7 +14,7 @@ class Bs4HtmlParser(object):
     def __init__(self, url, html):
         self.url = url
         self.html = self.pat.sub('', html)
-        self.bs = BeautifulSoup(html, 'lxml')
+        self.bs = BeautifulSoup(html)
 
     def parse(self):
         raise NotImplementedError()

@@ -76,7 +76,7 @@ class LagouCrawler(object):
         return self.url_manager.remove_url(url)
 
     def is_check_html(self, html):
-        title_text = (BeautifulSoup(html, 'lxml').find('title')).text or None
+        title_text = (BeautifulSoup(html).find('title')).text or None
         return title_text == '访问验证-拉勾网'
 
     def save_html(self, url, html):
