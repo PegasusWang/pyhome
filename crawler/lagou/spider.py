@@ -75,6 +75,9 @@ class LagouCrawler(object):
         self.logger.info('remove url: %s', url)
         return self.url_manager.remove_url(url)
 
+    def is_block_html(self, html):
+        return 'blocked_404' in html
+
     def is_check_html(self, html):
         title_text = (BeautifulSoup(html).find('title')).text or None
         return title_text == '访问验证-拉勾网'
@@ -109,12 +112,12 @@ class LagouCrawler(object):
                     continue
 
                 html = r.text
-                if not self.is_check_html(html):
-                    self.save_html(url, html)
-                    self.remove_url(url)
-                else:
+                if self.is_block_html(html) or self.is_check_html(html):
                     print('验证码页面')
                     break
+                else:
+                    self.save_html(url, html)
+                    self.remove_url(url)
 
 
 def main():
