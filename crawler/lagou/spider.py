@@ -186,6 +186,7 @@ class LagouCrawler(object):
 
         while self.url_nums() > 0:
             if self.sleep:
+                print('spider sleep %d' % slef.sleep)
                 time.sleep(self.sleep)
 
             url = self.next_url()
