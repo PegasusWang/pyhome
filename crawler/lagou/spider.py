@@ -104,6 +104,7 @@ class LagouCrawler(object):
     headers = CurlStrParser(curl_str).get_headers_dict()
     db = get_db('htmldb')
     col = getattr(db, 'lagou_html')    # collection
+    sleep = 10
 
     def __init__(self, domain):
         self.domain = domain
@@ -184,6 +185,9 @@ class LagouCrawler(object):
         self.update_headers()
 
         while self.url_nums() > 0:
+            if self.sleep:
+                time.sleep(self.sleep)
+
             url = self.next_url()
             if url is not None:
                 r = self.get_response(url)
