@@ -140,6 +140,26 @@ class CurlStrParser(object):
         return self.parse_curl_str()[2]
 
 
+def doublewrap(f):
+    '''
+    http://stackoverflow.com/questions/653368/how-to-create-a-python-decorator-that-can-be-used-either-with-or-without-paramet
+    a decorator decorator, allowing the decorator to be used as:
+    @decorator(with, arguments, and=kwargs)
+    or
+    @decorator
+    '''
+    @wraps(f)
+    def new_dec(*args, **kwargs):
+        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
+            # actual decorated function
+            return f(args[0])
+        else:
+            # decorator arguments
+            return lambda realf: f(realf, *args, **kwargs)
+
+    return new_dec
+
+
 def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
           changeip=False):
     """一个失败请求重试，或者使用下边这个功能强大的retrying
@@ -258,12 +278,13 @@ def get_domain(url):
     return get_tld(url)
 
 
-def logged(class_):
+@doublewrap
+def logged(class_, colored=True):
     """logged decorator.
 
     :param class_: add 'logger' attribute to class
     """
-    coloredlogs.install()
+    coloredlogs.install() if colored else None
     logging.getLogger("requests").setLevel(logging.WARNING)
     logging.basicConfig(level=logging.INFO, format='%(message)s %(lineno)d')
     class_.logger = logging.getLogger(class_.__name__)
