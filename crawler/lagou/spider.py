@@ -54,6 +54,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 5, sleep=CONFIG.CRAWLER.SLEEP,
                             change_ip()
                             contine
                         else:
+                            print('sleep for %ds' % sleep_time)
                             time.sleep(sleep_time)
 
                     if response.status_code in (301, 302, 404, 500):
@@ -71,7 +72,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 5, sleep=CONFIG.CRAWLER.SLEEP,
                     response = None
                     if isinstance(e, Timeout):
                         if sleep is not None:
-                            time.sleep(sleep + random.randint(1, 5))
+                            time.sleep(sleep + random.randint(10, 15))
                         continue
                     elif isinstance(e, TooManyRedirects):
                         break
