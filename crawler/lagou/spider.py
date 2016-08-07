@@ -15,8 +15,9 @@ from config.config import CONFIG
 from extract import extract_all
 from lib._db import get_db
 from utils import UrlManager, IncrId
+from ua import random_ua
 from web_util import (
-    change_ip, logged, cookie_dict_from_cookie_str, CurlStrParser,
+    change_ip, logged, cookie_dict_from_cookie_str, CurlStrParser
 )
 
 
@@ -90,7 +91,7 @@ _get = requests.get    # 防止循环引用
 def get(*args, **kwds):
     kwds.setdefault('timeout', 10)
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
+        'User-Agent': random_ua()
     }
     kwds.setdefault('headers', headers)
     return _get(*args, **kwds)
