@@ -186,8 +186,7 @@ class LagouCrawler(object):
 
         while self.url_nums() > 0:
             if self.sleep:
-                print('spider sleep %d' % self.sleep)
-                time.sleep(self.sleep)
+                time.sleep(self.sleep + random.randint(1, 5))
 
             url = self.next_url()
             if url is not None:
