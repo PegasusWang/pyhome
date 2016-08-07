@@ -160,15 +160,17 @@ class LagouCrawler(object):
 
     @staticmethod
     def is_block_html(html, verbose=True):
-        if verbose:
+        _ = 'blocked_404' in html
+        if _ and verbose:
             print('block页面')
-        return 'blocked_404' in html
+        return _
 
     @staticmethod
     def is_check_html(html, verbose=True):
-        if verbose:
+        _ = '访问验证-拉勾网' in html
+        if _ and verbose:
             print('验证码页面')
-        return '访问验证-拉勾网' in html
+        return _
 
     def save_html(self, url, html):
         self.logger.info('save html of url: %s', url)
