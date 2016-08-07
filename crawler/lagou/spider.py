@@ -52,7 +52,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 5, sleep=CONFIG.CRAWLER.SLEEP,
                         sleep_time = (sleep ** index + random.randint(1, 10))
                         if sleep_time > 300:   # 5 mins
                             change_ip()
-                            contine
+                            continue
                         else:
                             print('sleep for %ds' % sleep_time)
                             time.sleep(sleep_time)
@@ -186,7 +186,7 @@ class LagouCrawler(object):
 
         while self.url_nums() > 0:
             if self.sleep:
-                print('spider sleep %d' % slef.sleep)
+                print('spider sleep %d' % self.sleep)
                 time.sleep(self.sleep)
 
             url = self.next_url()
