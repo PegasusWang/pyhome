@@ -158,13 +158,15 @@ class LagouCrawler(object):
         return self.url_manager.remove_url(url)
 
     @staticmethod
-    def is_block_html(html):
-        print('block页面')
+    def is_block_html(html, verbose=True):
+        if verbose:
+            print('block页面')
         return 'blocked_404' in html
 
     @staticmethod
-    def is_check_html(html):
-        print('验证码页面')
+    def is_check_html(html, verbose=True):
+        if verbose:
+            print('验证码页面')
         return '访问验证-拉勾网' in html
 
     def save_html(self, url, html):
