@@ -56,6 +56,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 5, sleep=CONFIG.CRAWLER.SLEEP,
                         else:
                             print('sleep for %ds' % sleep_time)
                             time.sleep(sleep_time)
+                            continue
 
                     if response.status_code in (301, 302, 404, 500):
                         print('status_code', response.status_code)
