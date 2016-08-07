@@ -3,16 +3,95 @@
 
 
 import _env
+import random
+import time
+import traceback
+import requests
 from pprint import pformat
+from functools import wraps
+from requests.exceptions import TooManyRedirects, Timeout
+
 from config.config import CONFIG
 from extract import extract_all
-from bs4 import BeautifulSoup
 from lib._db import get_db
 from utils import UrlManager, IncrId
 from web_util import (
-    parse_curl_str, change_ip, get, logged, cookie_dict_from_cookie_str,
-    CurlStrParser,
+    change_ip, logged, cookie_dict_from_cookie_str, CurlStrParser,
 )
+
+
+def retry(retries=CONFIG.CRAWLER.RETRY or 5, sleep=CONFIG.CRAWLER.SLEEP,
+          changeip=False):
+    """一个失败请求重试，或者使用下边这个功能强大的retrying
+    pip install retrying
+    https://github.com/rholder/retrying
+    文章：常见的爬虫策略
+    http://mp.weixin.qq.com/s?__biz=MzAwMDU1MTE1OQ==&mid=2653547274&idx=1&sn=52e5037b163146c1656eedce2da1ecd8&scene=1&srcid=0527MEXhNRZATtlTPhinD5Re#rd
+
+    :param retries: number int of retry times.
+    301 Moved Temporarily
+    401 Unauthorized
+    403 Forbidden
+    404 Not Found
+    408 Request Timeout
+    429 Too Many Requests
+    503 Service Unavailable
+    """
+    def _retry(func):
+        @wraps(func)
+        def _wrapper(*args, **kwargs):
+            index = 0
+            while index < retries:
+                index += 1
+                try:
+                    response = func(*args, **kwargs)
+                    if response and (
+                        LagouCrawler.is_block_html(response.text) or
+                        LagouCrawler.is_check_html(response.text)
+                    ):
+                        sleep_time = (sleep ** index + random.randint(1, 10))
+                        if sleep_time > 300:   # 5 mins
+                            change_ip()
+                            contine
+                        else:
+                            time.sleep(sleep_time)
+
+                    if response.status_code in (301, 302, 404, 500):
+                        print('status_code', response.status_code)
+                        break
+                    elif response.status_code != 200:
+                        print(response.status_code)
+                        if changeip:
+                            change_ip()
+                        continue
+                    else:
+                        break
+                except Exception as e:
+                    traceback.print_exc()
+                    response = None
+                    if isinstance(e, Timeout):
+                        if sleep is not None:
+                            time.sleep(sleep + random.randint(1, 5))
+                        continue
+                    elif isinstance(e, TooManyRedirects):
+                        break
+
+            return response
+        return _wrapper
+    return _retry
+
+
+_get = requests.get    # 防止循环引用
+
+
+@retry(5)
+def get(*args, **kwds):
+    kwds.setdefault('timeout', 10)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
+    }
+    kwds.setdefault('headers', headers)
+    return _get(*args, **kwds)
 
 
 @logged
@@ -75,12 +154,13 @@ class LagouCrawler(object):
         self.logger.info('remove url: %s', url)
         return self.url_manager.remove_url(url)
 
-    def is_block_html(self, html):
+    @staticmethod
+    def is_block_html(html):
         return 'blocked_404' in html
 
-    def is_check_html(self, html):
-        title_text = (BeautifulSoup(html).find('title')).text or None
-        return title_text == '访问验证-拉勾网'
+    @staticmethod
+    def is_check_html(html):
+        return '访问验证-拉勾网' in html
 
     def save_html(self, url, html):
         self.logger.info('save html of url: %s', url)
