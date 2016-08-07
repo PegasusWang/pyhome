@@ -200,7 +200,9 @@ class LagouCrawler(object):
                 html = r.text
                 if self.is_block_html(html) or self.is_check_html(html):
                     print('验证码页面')
-                    break
+                    self.delay_url(url)
+                    self.update_headers()
+                    continue
                 else:
                     self.save_html(url, html)
                     self.remove_url(url)
