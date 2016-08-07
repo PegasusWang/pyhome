@@ -265,7 +265,7 @@ def logged(class_):
     """
     coloredlogs.install()
     logging.getLogger("requests").setLevel(logging.WARNING)
-    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(message)s %(lineno)d')
     class_.logger = logging.getLogger(class_.__name__)
     return class_
 
