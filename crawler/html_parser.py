@@ -5,7 +5,7 @@
 import re
 from bs4 import BeautifulSoup
 
-_pat = re.compile(r'[\n\r\t]')
+_pat = re.compile(r'[\n\r\t]')    # compile once when import
 
 
 class Bs4HtmlParser(object):
