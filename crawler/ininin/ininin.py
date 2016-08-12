@@ -92,11 +92,11 @@ _DB = get_db('ininin', client='mongo')
 _COL = getattr(_DB, 'ininin_data')
 
 
-def _save_mongo(url, data_dict):
+def _save_mongo(url, json_data):
     _COL.update(
         {'url': url},
         {
-            '$set': data_dict
+            '$set': {'data': json_data}
         },
         True
     )
@@ -110,7 +110,8 @@ def main():
             time.sleep(randint(5, 10))
             product_id = _get_product_id_from_url(url)
             data_dict = query_product_info_dict(product_id)
-            _save_mongo(url, data_dict)
+            json_data = json.dumps(data_dict)
+            _save_mongo(url, json_data)
 
 
 if __name__ == '__main__':
