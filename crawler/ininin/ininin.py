@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 import requests
 from six.moves.urllib.parse import urlencode, quote
 
-from lib._db import get_mongodb
+from lib._db import get_db
 from web_util import parse_curl_str
 
 
@@ -88,7 +88,7 @@ def _get_product_id_from_url(url='http://www.ininin.com/product/200021.html#300g
     return url.rsplit('/', 1)[1].split('.')[0]
 
 
-_DB = get_mongodb('ininin', client='mongo')
+_DB = get_db('ininin', client='mongo')
 _COL = getattr(_DB, 'ininin_data')
 
 
