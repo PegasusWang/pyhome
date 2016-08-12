@@ -128,8 +128,7 @@ def main():
             product_id = _get_product_id_from_url(url)
 
             data_dict = query_product_info_dict(product_id)
-            import pprint
-            pprint.pprint(data_dict)
+            pprint(data_dict)
             _save_mongo(url, data_dict)
 
 
