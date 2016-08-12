@@ -92,11 +92,28 @@ _DB = get_db('ininin', client='mongo')
 _COL = getattr(_DB, 'ininin_data')
 
 
-def _save_mongo(url, json_data):
+def _replace_dot_key_to_dash(data_dict):
+    """_replace_dot_key_to_dash mongo的key中不可以含有点，替换成-
+
+    :param data_dict:
+    """
+    params_dict = data_dict.get('params')
+    if not params_dict:
+        return data_dict
+    new_params_dict = {}
+    for k, v in params_dict.items():
+        k = k.replace('.', '-')
+        new_params_dict[k] = v
+    data_dict['params'] = new_params_dict
+    return data_dict
+
+
+def _save_mongo(url, data_dict):
+    data_dict = _replace_dot_key_to_dash(data_dict)
     _COL.update(
         {'url': url},
         {
-            '$set': {'data': json_data}
+            '$set': data_dict
         },
         True
     )
@@ -107,11 +124,13 @@ def main():
     for url in all_product_urls:
         if url:
             print('fetcing url: %s' % url)
-            time.sleep(randint(5, 10))
+            time.sleep(randint(3, 10))
             product_id = _get_product_id_from_url(url)
+
             data_dict = query_product_info_dict(product_id)
-            json_data = json.dumps(data_dict)
-            _save_mongo(url, json_data)
+            import pprint
+            pprint.pprint(data_dict)
+            _save_mongo(url, data_dict)
 
 
 if __name__ == '__main__':
