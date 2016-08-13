@@ -196,7 +196,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
                     else:
                         break
                 except Exception as e:
-                    traceback.print_exc()
+                    # traceback.print_exc()
                     response = None
                     if isinstance(e, Timeout):
                         if sleep is not None:
@@ -319,6 +319,7 @@ def get_proxy_dict(ip, port, proxy_type='http' or 'socks5'):
     :param port: int port
     :param proxy_type: 'http' or 'socks5'
     """
+    proxy_type = proxy_type.lower()
     proxies = {
         'http': '{proxy_type}://{ip}:{port}'.format(proxy_type=proxy_type, ip=ip, port=port),
         'https': '{proxy_type}://{ip}:{port}'.format(proxy_type=proxy_type, ip=ip, port=port),
@@ -344,5 +345,12 @@ def sleeper(base=2, index=1, max_sleep=180):
     time.sleep(sleep_time)
 
 
+def get_requests_proxy_ip(proxy_dict):
+    # url = 'http://httpbin.org/ip'
+    url = 'https://api.ipify.org?format=json'
+    print('use proxy', proxy_dict)
+    return requests.get(url, proxies=proxy_dict).text
+
+
 if __name__ == '__main__':
-    main()
+    pass

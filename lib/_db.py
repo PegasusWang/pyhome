@@ -4,18 +4,18 @@
 import _env
 from config.config import CONFIG
 from pymongo import MongoClient
-from motor import MotorClient
+# from motor import MotorClient
 from redis import StrictRedis
 
 
 mongo_client = MongoClient(CONFIG.MONGO.HOST, CONFIG.MONGO.PORT)
-motor_client = MotorClient(CONFIG.MONGO.HOST, CONFIG.MONGO.PORT)
+# motor_client = MotorClient(CONFIG.MONGO.HOST, CONFIG.MONGO.PORT)
 redis_client = StrictRedis(CONFIG.REDIS.HOST, CONFIG.REDIS.PORT)
 
 
 client_db_map = {
     'mongo': mongo_client,
-    'motor': motor_client
+    # 'motor': motor_client
 }
 
 

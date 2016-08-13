@@ -8,11 +8,15 @@ import concurrent.futures
 from io import open
 from collections import namedtuple
 from pprint import pprint
+from requests.exceptions import ProxyError, ConnectTimeout
 
 from lib._db import get_db
 from html_parser import Bs4HtmlParser
 from thread_pool_spider import ThreadPoolCrawler
-from web_util import get, logged, change_ip, get_proxy_dict, chunks
+from web_util import (
+    get, logged, change_ip, get_proxy_dict, chunks, get_requests_proxy_ip
+
+)
 
 
 class XiciHtmlParser(Bs4HtmlParser):
@@ -74,11 +78,11 @@ class XiciCrawler(ThreadPoolCrawler):
 
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
-    sleep = 3
+    sleep = 10
 
     def init_urls(self):
         url = 'http://www.xicidaili.com/nn/%d'
-        for i in range(1, 960):
+        for i in range(1, 10):
             self.urls.append(url % i)
 
     def bulk_update_to_mongo(self, ip_dict_list):
@@ -127,18 +131,18 @@ class CheckXiciCralwer(ThreadPoolCrawler):
 
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
-    timeout = 20    # 测试超时时间
+    timeout = 10    # 测试超时时间
 
     def init_urls(self):
         """init_urls get all ip proxy from monggo"""
-        url = 'http://www.baidu.com'
-        for ip_info in self.col.find(no_cursor_timeout=True)[:100]:
+        url = 'http://www.lagou.com/'
+        for ip_info in self.col.find(no_cursor_timeout=True):
             ip, port = ip_info['ip'], ip_info['port']
             if ip and port:
                 self.urls.append((url, ip, port))    # tuple
 
     def run_async(self):
-        for url_list in chunks(self.urls, 10):    # handle 100 every times
+        for url_list in chunks(self.urls, 100):    # handle 100 every times
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
                 future_to_url = {
                     executor.submit(
@@ -151,17 +155,97 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                     try:
                         response = future.result()
                     except Exception as e:
-                        # import traceback
-                        # traceback.print_exc()
-                        print(e)
+                        print('||||||||')
+                        self.logger.info('delete proxy %s:%s', ip, port)
+                        self.col.delete_one({'ip': ip, 'port': port})
                     else:
                         self.handle_response(url, response)
-            break    # TODO  remoe after test success
 
     def handle_response(self, url, response):
         """handle_response 验证代理的合法性。通过发送简单请求检测是否超时"""
         if response:
-            self.logger.info('url: %s', url, response.status_code)
+            self.logger.info('url: %s %s', url, response.status_code)
+
+
+class CheckKuaidailiCralwer(CheckXiciCralwer):
+    col = getattr(db, 'kuaidaili_proxy')    # collection
+
+
+class KuaidailiHtmlParser(Bs4HtmlParser):
+    fields = """ip, port, anonymous, type, address, speed, verify_time"""
+    IpInfo = namedtuple('IpInfo', fields)
+
+    def parse(self):
+        table_tag = self.bs.find(
+            'table', class_="table table-bordered table-striped"
+        )
+        tr_tags = table_tag.find_all('tr')
+        for tr_tag in tr_tags[1:]:    # skip header
+            td_tags = tr_tag.find_all('td')
+            td_text_list = [tag.get_text().strip() for tag in td_tags]
+            yield self.IpInfo(*td_text_list)._asdict()
+
+
+@logged
+class KuaidailiCrawler(ThreadPoolCrawler):
+
+    """http://www.kuaidaili.com/"""
+    db = get_db('htmldb')
+    col = getattr(db, 'kuaidaili_proxy')    # collection
+    sleep = 10
+
+    def init_urls(self):
+        _range = 1, 10
+        for i in range(_range[0], _range[1] + 1):
+            url = 'http://www.kuaidaili.com/free/inha/%d/' % i
+            self.urls.append(url)
+
+    def bulk_update_to_mongo(self, ip_dict_list):
+        bulk = self.col.initialize_ordered_bulk_op()
+
+        for ip_info_dict in ip_dict_list:
+            self.logger.info('%s:%s', ip_info_dict['ip'], ip_info_dict['port'])
+            query_dict = {
+                'ip': ip_info_dict['ip'],
+                'port': ip_info_dict['port'],
+            }
+            update_dict = {
+                '$set': ip_info_dict
+            }
+            bulk.find(query_dict).upsert().update(update_dict)
+
+        bulk.execute()
+        self.logger.info('count %d', self.col.count())
+
+    def handle_response(self, url, response):
+        self.logger.info('handle url: %s', url)
+        if not response:
+            return
+        if response.status_code == 200:
+            html = response.text
+            html_parser = KuaidailiHtmlParser(url, html)
+            ip_info_dict_yield = html_parser.parse()
+            self.bulk_update_to_mongo(ip_info_dict_yield)
+        elif response.status_code == 503:
+            change_ip()
+            self.urls.append(url)    # retry
+
+
+def get_proxy_from_kuaidaili(limit=10):
+    """get_proxy_from_kuaidaili
+    ":returns:" proxy dict requests can use directly
+    """
+    col = KuaidailiCrawler.col
+    res = col.find().sort('speed').limit(limit)
+    for doc in res:
+        yield get_proxy_dict(doc['ip'], doc['port'])
+
+
+def get_proxy_from_xici(limit=10):
+    col = XiciCrawler.col
+    res = col.find().sort('speed').limit(limit)
+    for doc in res:
+        yield get_proxy_dict(doc['ip'], doc['port'])
 
 
 def test():
@@ -185,5 +269,10 @@ def check_proxy():
     c.run()
 
 
+def run_kuaidaili():
+    c = KuaidailiCrawler()
+    c.run(use_thread=False)
+
 if __name__ == '__main__':
+    # run_xici()
     check_proxy()
