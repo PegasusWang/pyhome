@@ -15,8 +15,8 @@ from html_parser import Bs4HtmlParser
 from thread_pool_spider import ThreadPoolCrawler
 from web_util import (
     get, logged, change_ip, get_proxy_dict, chunks, get_requests_proxy_ip
-
 )
+from single_process import single_process
 
 
 class XiciHtmlParser(Bs4HtmlParser):
@@ -213,11 +213,13 @@ def test():
             print(i)
 
 
+@single_process
 def run_xici():
     xici_crawler = XiciCrawler()
     xici_crawler.run(use_thread=False)
 
 
+@single_process
 def run_kuaidaili():
     c = KuaidailiCrawler()
     c.run(use_thread=False)

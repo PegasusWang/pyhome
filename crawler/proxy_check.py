@@ -5,13 +5,14 @@
 import _env
 import re
 import concurrent.futures
+from pprint import pprint
 
 from lib._db import get_db
 from thread_pool_spider import ThreadPoolCrawler
 from web_util import (
     get, logged, change_ip, get_proxy_dict, chunks, get_requests_proxy_ip
-
 )
+from single_process import single_process
 
 
 @logged
@@ -33,6 +34,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
 
     def run_async(self):
         for url_list in chunks(self.urls, 100):    # handle 100 every times
+            pprint(url_list)
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
                 future_to_url = {
                     executor.submit(
@@ -62,11 +64,13 @@ class CheckKuaidailiCralwer(CheckXiciCralwer):
     col = getattr(db, 'kuaidaili_proxy')    # collection
 
 
+@single_process
 def check_proxy_xici():
     c = CheckXiciCralwer()
     c.run()
 
 
+@single_process
 def check_proxy_kuaidaili():
     c = CheckKuaidailiCralwer()
     c.run()
