@@ -5,6 +5,7 @@
 import _env
 import re
 import concurrent.futures
+import requests
 from pprint import pprint
 
 from lib._db import get_db
@@ -21,8 +22,9 @@ class CheckXiciCralwer(ThreadPoolCrawler):
 
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
-    timeout = 10    # 测试超时时间
-    concurrency = 100
+    # timeout = 0    # 测试超时时间
+    timeout = (5,5)    # 测试超时时间
+    concurrency = 10
 
     def init_urls(self):
         """init_urls get all ip proxy from monggo"""
@@ -32,8 +34,12 @@ class CheckXiciCralwer(ThreadPoolCrawler):
             if ip and port:
                 self.urls.append((url, ip, port))    # tuple
 
+    def get(self, url, proxies, timeout):
+        # return super(CheckXiciCralwer, self).get(url, proxies=proxies, timeout=timeout)
+        return requests.get(url, proxies=proxies, timeout=timeout)
+
     def run_async(self):
-        for url_list in chunks(self.urls, 100):    # handle 100 every times
+        for url_list in chunks(self.urls, 30):    # handle 100 every times
             pprint(url_list)
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
                 future_to_url = {
@@ -52,6 +58,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                         self.col.delete_one({'ip': ip, 'port': port})
                     else:
                         self.handle_response(url, response)
+            break
 
     def handle_response(self, url, response):
         """handle_response 验证代理的合法性。通过发送简单请求检测是否超时"""
