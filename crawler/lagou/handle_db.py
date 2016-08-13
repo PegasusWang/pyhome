@@ -35,10 +35,20 @@ def count_how_many_block_html():
     cnt = 0
     for html_doc in col.find(snapshot=True):
         html = html_doc['html']
-        if LagouCrawler.is_block_html(html):
+        if LagouCrawler.is_block_html(html, False):
             cnt += 1
     return cnt
 
 
+def count_how_many_check_html():
+    cnt = 0
+    for html_doc in col.find(snapshot=True):
+        html = html_doc['html']
+        if LagouCrawler.is_check_html(html, False):
+            cnt += 1
+    return cnt
+
 if __name__ == '__main__':
-    test_get_html()
+    # test_get_html()
+    # print(count_how_many_block_html())
+    print(count_how_many_check_html())
