@@ -222,7 +222,7 @@ def get(*args, **kwds):
     kwds.setdefault('headers', headers)
     return _get(*args, **kwds)
 
-requests.get = get
+# requests.get = get
 
 
 def lazy_property(fn):

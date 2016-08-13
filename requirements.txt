@@ -22,3 +22,4 @@ coloredlogs==5.0
 future
 futures
 lxml
+single_process
