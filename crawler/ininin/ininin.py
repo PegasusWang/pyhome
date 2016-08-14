@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import _env
+import datetime
 import json
 import re
 import time
@@ -110,6 +111,7 @@ def _replace_dot_key_to_dash(data_dict):
 
 def _save_mongo(url, data_dict):
     data_dict = _replace_dot_key_to_dash(data_dict)
+    data_dict['log_date'] = datetime.datetime.utcnow()
     _COL.update(
         {'url': url},
         {
