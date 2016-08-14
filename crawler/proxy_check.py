@@ -43,6 +43,8 @@ class CheckXiciCralwer(ThreadPoolCrawler):
         )
 
     def run_async(self):
+        self.logger.info('before check %d proixes', self.col.count())
+
         for url_list in chunks(self.urls, 30):    # handle 100 every times
             pprint(url_list)
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
@@ -61,6 +63,8 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                         self.col.delete_one({'ip': ip, 'port': port})
                     else:
                         self.handle_response(url, response)
+
+        self.logger.info('after check %d proixes', self.col.count())
 
     def handle_response(self, url, response):
         """handle_response 验证代理的合法性。通过发送简单请求检测是否超时"""

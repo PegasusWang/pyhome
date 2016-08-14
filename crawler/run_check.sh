@@ -6,3 +6,4 @@ cd $PREFIX
 source ~/.bashrc
 
 python -u proxy_check.py
+date
