@@ -82,9 +82,15 @@ class XiciCrawler(ThreadPoolCrawler):
     sleep = 10
 
     def init_urls(self):
-        url = 'http://www.xicidaili.com/nn/%d'
-        for i in range(1, 10):
-            self.urls.append(url % i)
+        urls = [
+            'http://www.xicidaili.com/wn/%d',
+            'http://www.xicidaili.com/wt/%d',
+            'http://www.xicidaili.com/nn/%d',
+            'http://www.xicidaili.com/nt/%d',
+        ]
+        for url in urls:
+            for i in range(1, 10):
+                self.urls.append(url % i)
 
     def bulk_update_to_mongo(self, ip_dict_list):
         """bulk_update_to_mongo
@@ -216,7 +222,7 @@ def get_random_proxy_dict(proxy_from=None):
     """
     proxy_from = proxy_from or choice(('xici', 'kuaidaili'))
     if proxy_from == 'xici':
-        l = choice(list(get_proxy_from_xici()))
+        l = choice(list(get_proxy_from_xici()))    # TODO IndexError
     else:
         l = choice(list(get_proxy_from_kuaidaili()))
     return l if l else None
