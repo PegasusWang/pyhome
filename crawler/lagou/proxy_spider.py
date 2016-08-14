@@ -130,7 +130,7 @@ class LagouCrawler(object):
             self.logger.info('%s', pformat(all_loc_url))
             self.add_url(all_loc_url)
 
-    def update_headers(self, changeip=True):
+    def update_headers(self, changeip=False):
         if changeip:
             change_ip()
         r = get(self.base_url)
