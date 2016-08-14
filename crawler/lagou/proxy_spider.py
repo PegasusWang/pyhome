@@ -143,7 +143,7 @@ class LagouCrawler(object):
     def get_response(self, url, **kwargs):
         proxy_dict = get_random_proxy_dict()
         kwargs.setdefault('proxies', proxy_dict)
-        self.logger.info('now crawler: %s', url)
+        self.logger.info('now crawler: %s\n%s', url, pformat(proxy_dict))
         return get(url, headers=self.headers, **kwargs)
 
     def url_nums(self):

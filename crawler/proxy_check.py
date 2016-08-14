@@ -61,7 +61,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                     url, ip, port = future_to_url[future]
                     try:
                         response = future.result()
-                        if response.code != 200:
+                        if response.status_code != 200:
                             self.logger.info(
                                 'status_code %d ,delete proxy %s:%s',
                                 response.status_code, ip, port

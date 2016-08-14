@@ -152,8 +152,13 @@ class KuaidailiCrawler(ThreadPoolCrawler):
     def init_urls(self):
         _range = 1, 10
         for i in range(_range[0], _range[1] + 1):
-            url = 'http://www.kuaidaili.com/free/inha/%d/' % i
-            self.urls.append(url)
+            url_list = [url % i for url in [
+                'http://www.kuaidaili.com/free/inha/%d/',
+                'http://www.kuaidaili.com/free/intr/%d/',
+                'http://www.kuaidaili.com/free/intr/%d/',
+                'http://www.kuaidaili.com/free/outha/%d/',
+            ]]
+            self.urls.extend(url_list)
 
     def bulk_update_to_mongo(self, ip_dict_list):
         bulk = self.col.initialize_ordered_bulk_op()
@@ -211,10 +216,10 @@ def get_random_proxy_dict(proxy_from=None):
     """
     proxy_from = proxy_from or choice(('xici', 'kuaidaili'))
     if proxy_from == 'xici':
-        l = list(get_proxy_from_xici(1))
+        l = choice(list(get_proxy_from_xici()))
     else:
-        l = list(get_proxy_from_kuaidaili(1))
-    return l[0] if l else None
+        l = choice(list(get_proxy_from_kuaidaili()))
+    return l if l else None
 
 
 def test():
