@@ -27,7 +27,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
     timeout = (10, 10)    # connect timeout and read timeout
-    concurrency = 20
+    concurrency = 100
 
     def init_urls(self):
         """init_urls get all ip proxy from monggo"""
@@ -48,7 +48,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
     def run_async(self):
         self.logger.info('before check %d proixes', self.col.count())
 
-        for url_list in chunks(self.urls, 30):    # handle 100 every times
+        for url_list in chunks(self.urls, 100):    # handle 100 every times
             pprint(url_list)
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrency) as executor:
                 future_to_url = {
