@@ -111,7 +111,7 @@ def _replace_dot_key_to_dash(data_dict):
 
 def _save_mongo(url, data_dict):
     data_dict = _replace_dot_key_to_dash(data_dict)
-    log_date = datetime.datetime.utcnow()
+    log_date = datetime.datetime.utcnow().strftime('%Y-%m-%d')
     data_dict['log_date'] = log_date
     _COL.update(
         {'url': url, 'log_date': log_date},
