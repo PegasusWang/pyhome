@@ -7,13 +7,14 @@ import re
 import concurrent.futures
 import requests
 from pprint import pprint
+from single_process import single_process
 
 from lib._db import get_db
 from thread_pool_spider import ThreadPoolCrawler
+from ua import random_search_engine_ua
 from web_util import (
     get, logged, change_ip, get_proxy_dict, chunks, get_requests_proxy_ip
 )
-from single_process import single_process
 
 
 @logged
@@ -22,9 +23,8 @@ class CheckXiciCralwer(ThreadPoolCrawler):
 
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
-    # timeout = 0    # 测试超时时间
-    timeout = (5, 10)    # 测试超时时间
-    concurrency = 10
+    timeout = (10, 10)    # connect timeout and read timeout
+    concurrency = 20
 
     def init_urls(self):
         """init_urls get all ip proxy from monggo"""
@@ -35,8 +35,12 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                 self.urls.append((url, ip, port))    # tuple
 
     def get(self, url, proxies, timeout):
-        # use origin requests.get
-        return requests.get(url, proxies=proxies, timeout=timeout)
+        headers = {
+            'User-Agent': random_search_engine_ua()
+        }
+        return requests.get(
+            url, proxies=proxies, timeout=timeout, headers=headers
+        )
 
     def run_async(self):
         for url_list in chunks(self.urls, 30):    # handle 100 every times
@@ -69,17 +73,20 @@ class CheckKuaidailiCralwer(CheckXiciCralwer):
     col = getattr(db, 'kuaidaili_proxy')    # collection
 
 
-@single_process
 def check_proxy_xici():
     c = CheckXiciCralwer()
     c.run()
 
 
-@single_process
 def check_proxy_kuaidaili():
     c = CheckKuaidailiCralwer()
     c.run()
 
 
-if __name__ == '__main__':
+@single_process
+def main():
+    check_proxy_kuaidaili()
     check_proxy_xici()
+
+if __name__ == '__main__':
+    main()

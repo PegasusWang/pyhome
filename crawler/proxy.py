@@ -213,17 +213,20 @@ def test():
             print(i)
 
 
-@single_process
 def run_xici():
     xici_crawler = XiciCrawler()
     xici_crawler.run(use_thread=False)
 
 
-@single_process
 def run_kuaidaili():
     c = KuaidailiCrawler()
     c.run(use_thread=False)
 
+
+@single_process
+def main():
+    run_kuaidaili()
+    run_xici()
+
 if __name__ == '__main__':
-    # run_xici()
-    check_proxy()
+    main()
