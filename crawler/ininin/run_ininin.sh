@@ -5,3 +5,4 @@ cd $PREFIX
 source ~/.bashrc
 
 python -u ininin.py    # -u 参数强制刷新输出
+date
