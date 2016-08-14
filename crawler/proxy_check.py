@@ -23,7 +23,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
     db = get_db('htmldb')
     col = getattr(db, 'xici_proxy')    # collection
     # timeout = 0    # 测试超时时间
-    timeout = (5,5)    # 测试超时时间
+    timeout = (5, 10)    # 测试超时时间
     concurrency = 10
 
     def init_urls(self):
@@ -35,7 +35,7 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                 self.urls.append((url, ip, port))    # tuple
 
     def get(self, url, proxies, timeout):
-        # return super(CheckXiciCralwer, self).get(url, proxies=proxies, timeout=timeout)
+        # use origin requests.get
         return requests.get(url, proxies=proxies, timeout=timeout)
 
     def run_async(self):
@@ -52,13 +52,11 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                     url, ip, port = future_to_url[future]
                     try:
                         response = future.result()
-                    except Exception as e:
-                        print('||||||||')
+                    except Exception as e:  # 之前使用的自己的get导致异常没raise
                         self.logger.info('delete proxy %s:%s', ip, port)
                         self.col.delete_one({'ip': ip, 'port': port})
                     else:
                         self.handle_response(url, response)
-            break
 
     def handle_response(self, url, response):
         """handle_response 验证代理的合法性。通过发送简单请求检测是否超时"""

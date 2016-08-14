@@ -196,6 +196,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 3, sleep=CONFIG.CRAWLER.SLEEP,
                     else:
                         break
                 except Exception as e:
+                    # 考虑是否要重新抛出异常
                     # traceback.print_exc()
                     response = None
                     if isinstance(e, Timeout):
@@ -222,7 +223,7 @@ def get(*args, **kwds):
     kwds.setdefault('headers', headers)
     return _get(*args, **kwds)
 
-# requests.get = get
+# requests.get = get    # 不要monkey patch原来的
 
 
 def lazy_property(fn):
