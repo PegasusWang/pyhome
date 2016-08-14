@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+通过对mongodb中的代理进行并发测试有效性，无效就及时删除。
+"""
 
 import _env
 import re

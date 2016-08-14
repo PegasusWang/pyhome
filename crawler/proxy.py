@@ -3,7 +3,6 @@
 
 
 import _env
-random
 import re
 import concurrent.futures
 from io import open
