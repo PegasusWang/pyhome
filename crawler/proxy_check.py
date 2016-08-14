@@ -61,6 +61,12 @@ class CheckXiciCralwer(ThreadPoolCrawler):
                     url, ip, port = future_to_url[future]
                     try:
                         response = future.result()
+                        if response.code != 200:
+                            self.logger.info(
+                                'status_code %d ,delete proxy %s:%s',
+                                response.status_code, ip, port
+                            )
+                            self.col.delete_one({'ip': ip, 'port': port})
                     except Exception as e:  # 之前使用的自己的get导致异常没raise
                         self.logger.info('delete proxy %s:%s', ip, port)
                         self.col.delete_one({'ip': ip, 'port': port})
