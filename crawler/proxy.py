@@ -202,6 +202,18 @@ def get_proxy_from_xici(limit=10):
         yield get_proxy_dict(doc['ip'], doc['port'])
 
 
+def get_random_proxy_dict(proxy_from='xici' or 'kuaidaili'):
+    """ get_random_proxy_dict
+
+    :param proxy_from: return dict proxy requests can use directly
+    """
+    if proxy_from == 'xici':
+        l = list(get_proxy_from_xici(1))
+    else:
+        l = list(get_proxy_from_kuaidaili(1))
+    return l[0] if l else None
+
+
 def test():
     url = 'http://www.xicidaili.com/nn'
     # html = get(url).text
