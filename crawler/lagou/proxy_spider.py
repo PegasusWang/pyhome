@@ -52,7 +52,7 @@ def retry(retries=CONFIG.CRAWLER.RETRY or 5, sleep=CONFIG.CRAWLER.SLEEP,
                         LagouCrawler.is_check_html(response.text)
                     ):
                         sleep_time = (sleep ** index + random.randint(1, 10))
-                        if sleep_time > 300:   # 5 mins
+                        if sleep_time > 30:   # 5 mins, 代理池减小
                             change_ip()
                             continue
                         else:
@@ -113,6 +113,7 @@ class LagouCrawler(object):
         self.domain = domain
         self.url_manager = UrlManager(domain)
         self.incr_id = IncrId(self.__class__.__name__)
+        self.proxy_dict = get_random_proxy_dict()
 
     def add_url(self, url):
         self.url_manager.add_url(url)
@@ -130,9 +131,10 @@ class LagouCrawler(object):
             self.logger.info('%s', pformat(all_loc_url))
             self.add_url(all_loc_url)
 
-    def update_headers(self, changeip=False):
+    def update_headers(self, changeip=True):
         if changeip:
-            change_ip()
+            self.change_proxy()
+
         r = get(self.base_url)
         h = cookie_dict_from_cookie_str(r.headers.get('Set-Cookie'))
         cookies_dict = cookie_dict_from_cookie_str(self.headers['Cookie'])
@@ -140,10 +142,12 @@ class LagouCrawler(object):
         self.headers['Cookie'] = cookies_dict
         self.logger.info('headers: %s', pformat(self.headers))
 
+    def change_proxy(self):
+        self.proxy_dict = get_random_proxy_dict()
+
     def get_response(self, url, **kwargs):
-        proxy_dict = get_random_proxy_dict()
-        kwargs.setdefault('proxies', proxy_dict)
-        self.logger.info('now crawler: %s\n%s', url, pformat(proxy_dict))
+        kwargs.setdefault('proxies', self.proxy_dict)
+        self.logger.info('now crawler: %s\n%s', url, pformat(self.proxy_dict))
         return get(url, headers=self.headers, **kwargs)
 
     def url_nums(self):
