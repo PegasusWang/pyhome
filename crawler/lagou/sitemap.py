@@ -27,11 +27,9 @@ class LagouSitemap(AsySpider):
         self.logger.info('url:%s', url)
         if response.code == 200:
             self.handle_html(url, response.body)
-        else:
-            break
 
     def init_urls(self):
-        for i in range(1, 1000):
+        for i in range(1, 541):    # max is 540
             url = 'http://www.lagou.com/upload/sitemap/xml/lagou_sitemap_%d.xml'%i
             self.urls.append(url)
 
