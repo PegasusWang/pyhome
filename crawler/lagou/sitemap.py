@@ -3,22 +3,21 @@
 
 import _env
 from pprint import pformat
-from async_spider import AsySpider
 from extract import extract_all
 from lib._db import get_db
+from thread_pool_spider import ThreadPoolCrawler
 
 
-class LagouSitemap(AsySpider):
+class LagouSitemap(ThreadPoolCrawler):
     db = get_db('htmldb')
     col = getattr(db, 'lagou_url')    # collection
 
-    def fetch(self, url, **kwargs):
+    def get(self, url, *args, **kwargs):
         headers = {
             'User-Agent': 'mozilla/5.0 (compatible; baiduspider/2.0; +http://www.baidu.com/search/spider.html)',
         }
-        return super(MySpider, self).fetch(
-            url, headers=headers,
-            # proxy_host="127.0.0.1", proxy_port=8787,    # for proxy
+        return super(LagouSitemap, self).get(
+            url, headers=headers, *args, **kwargs
         )
 
     def handle_response(self, url, response):
@@ -26,7 +25,7 @@ class LagouSitemap(AsySpider):
         否则按照需求处理不同响应码"""
         self.logger.info('url:%s', url)
         if response.code == 200:
-            self.handle_html(url, response.body)
+            self.handle_html(url, response.text)
 
     def init_urls(self):
         for i in range(1, 541):    # max is 540
