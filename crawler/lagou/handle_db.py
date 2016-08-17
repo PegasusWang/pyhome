@@ -33,7 +33,7 @@ def test_get_html():
 
 def count_how_many_block_html():
     cnt = 0
-    for html_doc in col.find(snapshot=True):
+    for html_doc in col.find(modifiers={"$snapshot": True}):
         html = html_doc['html']
         if LagouCrawler.is_block_html(html, False):
             cnt += 1
@@ -41,14 +41,21 @@ def count_how_many_block_html():
 
 
 def count_how_many_check_html():
+    print(col.count())
     cnt = 0
-    for html_doc in col.find(snapshot=True):
+    _id_list = []
+    for html_doc in col.find(modifiers={"$snapshot": True}):
         html = html_doc['html']
         if LagouCrawler.is_check_html(html, False):
             cnt += 1
+            _id_list.append(html_doc._id)
     return cnt
+    print(col.count())
+    # col.remove({'_id':{'$in':_id_list}})
+
 
 if __name__ == '__main__':
     # test_get_html()
     # print(count_how_many_block_html())
-    print(count_how_many_check_html())
+    # print(count_how_many_check_html())
+    print(col.count())
