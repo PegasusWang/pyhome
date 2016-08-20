@@ -24,7 +24,7 @@ class LagouSitemap(ThreadPoolCrawler):
         """处理http响应，对于200响应码直接处理html页面，
         否则按照需求处理不同响应码"""
         self.logger.info('url:%s', url)
-        if response.code == 200:
+        if response.status_code == 200:
             self.handle_html(url, response.text)
 
     def init_urls(self):
