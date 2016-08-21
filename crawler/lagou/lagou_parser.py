@@ -32,6 +32,10 @@ class LagouHtmlParser(Bs4HtmlParser):
         assert 'job' in self.url
         print('handle: %s' % self.url)
         job_detail_dl_tag = bs.find(class_='job_detail')
+
+        if job_detail_dl_tag is None:
+            return None
+
         source = job_detail_dl_tag.find('div').text    # 盒子鱼英语技术部招聘
         job = job_detail_dl_tag.find('h1').get('title')  # 数据挖掘
         job_request_dd_tag = job_detail_dl_tag.find('dd', class_="job_request")

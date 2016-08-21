@@ -95,14 +95,20 @@ class ParseJob(object):
         for doc_dict in self.from_col.find(
             {'_id': {'$gte': self.last_id}}
         ).sort('_id', 1):
-            if 'job' in doc_dict['url']:
+
+            if 'job' in doc_dict['url']:    # job url
                 doc = ObjectDict(doc_dict)
                 assert doc.url and doc.html
                 if LagouCrawler.is_deleted_html(doc.html, False):
                     self.from_col.delete_one({'url': doc.url})
                     continue
                 job_parser = LagouHtmlParser(doc.url, doc.html)
+
                 data_dict = job_parser.parse_job()
+                if data_dict is None:
+                    self.from_col.delete_one({'url': doc.url})
+                    continue
+
                 self.logger.info(
                     'handle url: %s %s:%s',
                     doc.url, data_dict['source'], data_dict['job']
