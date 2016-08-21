@@ -69,9 +69,16 @@ class ParseJob(object):
         self.key = self.__class__.__name__
         self.last_id = int(r.get(self.key)) or 0
 
+    def set_id(self, last_id=0):
+        r.set(self.key, last_id)
+
     def run_job(self):
         """lagou job页面的信息任务"""
-        for doc_dict in self.col.find({'_id': {'$gte': self.last_id}}):
+        for doc_dict in self.col.find(
+            {'_id': {'$gte': self.last_id}}
+        ).sort(
+            {'id': 1}
+        ):
             if 'job' in doc_dict['url']:
                 doc = ObjectDict(doc_dict)
                 assert doc_dict.url and doc.html
@@ -90,6 +97,7 @@ class ParseJob(object):
                     },
                     upsert=True
                 )
+                self.set_id(doc._id)
 
 
 if __name__ == '__main__':
