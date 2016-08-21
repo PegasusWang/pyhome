@@ -353,5 +353,15 @@ def get_requests_proxy_ip(proxy_dict):
     return requests.get(url, proxies=proxy_dict).text
 
 
+def download_file(url, filename=None):
+    local_filename = filename or url.split('/')[-1]
+    r = requests.get(url, stream=True)
+    with open(local_filename, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+    return local_filename
+
+
 if __name__ == '__main__':
     pass
