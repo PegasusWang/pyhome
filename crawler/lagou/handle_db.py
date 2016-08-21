@@ -90,6 +90,8 @@ class ParseJob(object):
             if 'job' in doc_dict['url']:
                 doc = ObjectDict(doc_dict)
                 assert doc.url and doc.html
+                if LagouCrawler.is_deleted_html(html, False):
+                    self.from_col.delete_one({'url': doc.url})
                 job_parser = LagouHtmlParser(doc.url, doc.html)
                 data_dict = job_parser.parse_job()
                 self.logger.info(
