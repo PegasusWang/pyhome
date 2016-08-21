@@ -159,6 +159,13 @@ class LagouCrawler(object):
         return self.url_manager.remove_url(url)
 
     @staticmethod
+    def is_deleted_html(html, verbose=True):
+        _ = '信息已经被删除' in html
+        if _ and verbose:
+            print('信息已经被删除页面')
+        return _
+
+    @staticmethod
     def is_block_html(html, verbose=True):
         _ = 'blocked_404' in html
         if _ and verbose:

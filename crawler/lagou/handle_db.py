@@ -44,15 +44,25 @@ def count_how_many_block_html():
     return cnt
 
 
+def remove_deleted_html():
+    cnt = 0
+    for html_doc in col.find(modifiers={"$snapshot": True}):
+        html = html_doc['html']
+        if LagouCrawler.is_deleted_html(html, False):
+            cnt += 1
+    return cnt
+
+
 def count_how_many_check_html():
     print(col.count())
     cnt = 0
     _id_list = []
     for html_doc in col.find(modifiers={"$snapshot": True}):
         html = html_doc['html']
-        if LagouCrawler.is_check_html(html, False):
+        if LagouCrawler.is_check_html(html, verbose=False):
             cnt += 1
             _id_list.append(html_doc._id)
+    print(cnt)
     return cnt
     print(col.count())
     # col.remove({'_id':{'$in':_id_list}})
@@ -76,7 +86,7 @@ class ParseJob(object):
     def run_job(self):
         """lagou job页面的信息任务"""
         for doc_dict in self.from_col.find(
-            {'_id': {'$gte': self.last_id}}
+            {'_id': {'$gte': self.last_id}}, modifiers={"$snapshot": True}
         ).sort('_id', 1):
             if 'job' in doc_dict['url']:
                 doc = ObjectDict(doc_dict)
