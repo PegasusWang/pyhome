@@ -5,7 +5,7 @@
 import _env
 import json
 from pprint import pformat
-from six import import string_types
+from six import string_types
 from bs4 import BeautifulSoup
 from html_parser import Bs4HtmlParser
 from lib._db import get_db
@@ -30,6 +30,7 @@ class LagouHtmlParser(Bs4HtmlParser):
         """
         bs = self.bs
         assert 'job' in self.url
+        print('handle: %s' % self.url)
         job_detail_dl_tag = bs.find(class_='job_detail')
         source = job_detail_dl_tag.find('div').text    # 盒子鱼英语技术部招聘
         job = job_detail_dl_tag.find('h1').get('title')  # 数据挖掘
@@ -48,9 +49,13 @@ class LagouHtmlParser(Bs4HtmlParser):
 
         ul_feature_tags = bs.find_all('ul', class_='c_feature')
         ul_feature_li_tag_list = ul_feature_tags[0].find_all('li')
-        company_fields, company_people, company_url = [
-            ul_tag.text.split()[1] for ul_tag in ul_feature_li_tag_list
-        ]
+        company_info_list = ['company_fields', 'company_people', 'company_url']
+        for index, ul_tag in enumerate(ul_feature_li_tag_list):
+            try:
+                company_info_list[index] = ul_tag.text.split()[1]
+            except IndexError:
+                company_info_list[index] = ''
+        company_fields, company_people, company_url = company_info_list
 
         company_step = ul_feature_tags[1].find('li').text.split()[1]
         company_addr_text = bs.find('div', class_='work_addr').text
