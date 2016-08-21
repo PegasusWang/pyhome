@@ -58,8 +58,13 @@ class LagouHtmlParser(Bs4HtmlParser):
         company_fields, company_people, company_url = company_info_list
 
         company_step = ul_feature_tags[1].find('li').text.split()[1]
-        company_addr_text = bs.find('div', class_='work_addr').text
-        company_addr = ''.join(company_addr_text.split())    # remove blank
+        print(company_step)
+        try:
+            company_addr_text = bs.find('div', class_='work_addr').text
+            company_addr = ''.join(company_addr_text.split())    # remove blank
+        except AttributeError:
+            small_map_tag = bs.find('div', id='smallmap')
+            company_addr = small_map_tag.find_previous('div').text
 
         to_save_set = frozenset([
             'source', 'job', 'salary', 'work_place', 'work_experience',

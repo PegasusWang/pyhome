@@ -117,7 +117,7 @@ class ParseJob(object):
                         },
                         upsert=True
                     )
-                    self.set_id(doc._id)
+                self.set_id(doc._id)
 
 
 if __name__ == '__main__':
