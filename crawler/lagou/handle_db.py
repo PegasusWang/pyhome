@@ -14,7 +14,6 @@ from web_util import logged
 DEBUG = True
 db = get_db('htmldb')
 lagou_html_col = getattr(db, 'lagou_html')    # collection
-lagou_job_col = getattr(db, 'lagou_job_col')
 
 
 def test_get_db():
@@ -46,7 +45,7 @@ def count_how_many_block_html():
 
 def remove_deleted_html():
     cnt = 0
-    for html_doc in col.find(modifiers={"$snapshot": True}):
+    for html_doc in lagou_html_col.find(modifiers={"$snapshot": True}):
         html = html_doc['html']
         if LagouCrawler.is_deleted_html(html, False):
             cnt += 1
@@ -115,5 +114,6 @@ if __name__ == '__main__':
     # print(count_how_many_block_html())
     # print(count_how_many_check_html())
     # print(col.count())
-    p = ParseJob()
-    p.run_job()
+    # p = ParseJob()
+    # p.run_job()
+    remove_deleted_html()
