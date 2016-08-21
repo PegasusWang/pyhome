@@ -35,10 +35,14 @@ def test_get_html():
 
 
 def count_how_many_block_html():
+    col = lagou_html_col
     cnt = 0
     for html_doc in col.find(modifiers={"$snapshot": True}):
+        url = html_doc['url']
         html = html_doc['html']
         if LagouCrawler.is_block_html(html, False):
+            lagou_html_col.delete_one({'url': url})
+            print(url)
             cnt += 1
     return cnt
 
@@ -46,13 +50,17 @@ def count_how_many_block_html():
 def remove_deleted_html():
     cnt = 0
     for html_doc in lagou_html_col.find(modifiers={"$snapshot": True}):
+        url = html_doc['url']
         html = html_doc['html']
         if LagouCrawler.is_deleted_html(html, False):
+            lagou_html_col.delete_one({'url': url})
+            print(url)
             cnt += 1
     return cnt
 
 
 def count_how_many_check_html():
+    col = lagou_html_col
     print(col.count())
     cnt = 0
     _id_list = []
@@ -85,13 +93,14 @@ class ParseJob(object):
     def run_job(self):
         """lagou job页面的信息任务"""
         for doc_dict in self.from_col.find(
-            {'_id': {'$gte': self.last_id}}, modifiers={"$snapshot": True}
+            {'_id': {'$gte': self.last_id}}
         ).sort('_id', 1):
             if 'job' in doc_dict['url']:
                 doc = ObjectDict(doc_dict)
                 assert doc.url and doc.html
-                if LagouCrawler.is_deleted_html(html, False):
+                if LagouCrawler.is_deleted_html(doc.html, False):
                     self.from_col.delete_one({'url': doc.url})
+                    continue
                 job_parser = LagouHtmlParser(doc.url, doc.html)
                 data_dict = job_parser.parse_job()
                 self.logger.info(
@@ -116,6 +125,7 @@ if __name__ == '__main__':
     # print(count_how_many_block_html())
     # print(count_how_many_check_html())
     # print(col.count())
-    # p = ParseJob()
-    # p.run_job()
-    remove_deleted_html()
+    p = ParseJob()
+    p.run_job()
+    # remove_deleted_html()
+    # print(count_how_many_block_html())
