@@ -7,6 +7,7 @@ http://www.bjguahao.gov.cn/
 """
 
 import _env
+from .config import mobileNo, password
 import requests
 from pprint import pprint
 from web_util import parse_curl_str
@@ -19,8 +20,8 @@ CONFIRM_URL, _, CONFIRM_DATA = parse_curl_str(CONFIRM_STR)
 
 def get_qrcode():
     CURL_STR = """
-    curl 'http://www.bjguahao.gov.cn/quicklogin.htm' -H 'Cookie: JSESSIONID=79657BDB664F5A7BF7F25EAE9AEC069A; SESSION_COOKIE=3cab1829cea36ddbceb17f7e; Hm_lvt_bc7eaca5ef5a22b54dd6ca44a23988fa=1467855129,1468286722,1468372579,1468459884; Hm_lpvt_bc7eaca5ef5a22b54dd6ca44a23988fa=1468459939' -H 'Origin: http://www.bjguahao.gov.cn' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Referer: http://www.bjguahao.gov.cn/dpt/appoint/142-200039542.htm' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' --data 'mobileNo=18810564550&password=199419wnnwnn&yzm=&isAjax=true' --compressed
-    """
+    curl 'http://www.bjguahao.gov.cn/quicklogin.htm' -H 'Cookie: JSESSIONID=79657BDB664F5A7BF7F25EAE9AEC069A; SESSION_COOKIE=3cab1829cea36ddbceb17f7e; Hm_lvt_bc7eaca5ef5a22b54dd6ca44a23988fa=1467855129,1468286722,1468372579,1468459884; Hm_lpvt_bc7eaca5ef5a22b54dd6ca44a23988fa=1468459939' -H 'Origin: http://www.bjguahao.gov.cn' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Referer: http://www.bjguahao.gov.cn/dpt/appoint/142-200039542.htm' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' --data 'mobileNo={}&password={}&yzm=&isAjax=true' --compressed
+    """.format(mobileNo, password)
     url, headers_dict, data = parse_curl_str(CURL_STR)
     del headers_dict['Cookie']    # note must delete this Cookie before login
     with requests.Session() as s:
