@@ -26,7 +26,7 @@ def main():
     data = d.get_content()
 
     u = QiniuUploder()
-    ret, info = u.put_data('6044.mobi', data)
+    ret, info = u.put_data('中文.mobi', data)
     import pprint
     pprint.pprint(ret)
     pprint.pprint(info)
@@ -46,7 +46,7 @@ class QiniuUploder(object):
     def put_file(self, key, filepath):
         """ put_file
 
-        :param key: filename in qiniu
+        :param key: filename in qiniu, key can be chinese
         """
         token = self.auth.upload_token(
             self.bucket_name, key, self.token_timeout
