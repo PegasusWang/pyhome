@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
+import _env
 import datetime
 import json
 import errno
@@ -11,11 +12,12 @@ import time
 import requests
 from Queue import Queue
 import MySQLdb as mdb
+from config.config import CONFIG
 
 
-DB_HOST = '127.0.0.1'
-DB_USER = 'root'
-DB_PASS = '
+DB_HOST = CONFIG.MYSQL.HOST
+DB_USER = CONFIG.MYSQL.USER
+DB_PASS = CONFIG.MYSQL.PASS
 
 
 re_start = re.compile(r'start=(\d+)')
