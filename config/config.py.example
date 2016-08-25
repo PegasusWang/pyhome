@@ -21,3 +21,13 @@ class CONFIG:
         PROXIES_PASSWORD = ''
         SLEEP = 3    # seconds or None no sleep
         RETRY = 3
+
+    class QINIU:
+        ACCESS_KEY = ''
+        SECRET_KEY = ''
+        BUCKET_NAME = 'test'
+
+    class MYSQL:
+        HOST = '127.0.0.1'
+        USER = 'root'
+        PASS = ''

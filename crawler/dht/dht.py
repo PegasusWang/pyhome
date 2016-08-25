@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
+import datetime
+import json
+import errno
 import re
 import urllib2
+import threading
 import time
-from Queue import Queue
-import threading, errno, datetime
-import json
 import requests
+from Queue import Queue
 import MySQLdb as mdb
 
 
 DB_HOST = '127.0.0.1'
 DB_USER = 'root'
-DB_PASS = ''
+DB_PASS = '
 
 
 re_start = re.compile(r'start=(\d+)')
