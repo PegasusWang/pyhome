@@ -394,5 +394,11 @@ class Downloader(object):
         return io.getvalue()
 
 
+def class_method_decorator(method):
+    @wraps(method)
+    def _impl(self, *method_args, **method_kwargs):
+        method(self, *method_args, **method_kwargs)
+    return _impl
+
 if __name__ == '__main__':
     pass

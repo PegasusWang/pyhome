@@ -9,7 +9,7 @@ from web_util import download_file, Downloader, parse_curl_str
 from config.config import CONFIG
 
 
-class KankanDou(Downloader):
+class KankanDouDownloader(Downloader):
     curl_str = """
     curl 'http://kankandou.com/book/view/12678.html' -H 'Accept-Encoding: gzip, deflate, sdch' -H 'Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Referer: http://kankandou.com/login.html?uri=/book/view/12678.html' -H 'Cookie: cisession=2b040f9878b9a9e464e56bf831c3565d8e637e79; CNZZDATA1000201968=2121606612-1470262708-%7C1471877794; Hm_lvt_f805f7762a9a237a0deac37015e9f6d9=1471532383,1471532385,1471534944,1471681547; Hm_lpvt_f805f7762a9a237a0deac37015e9f6d9=1471881503' -H 'Connection: keep-alive' -H 'Cache-Control: max-age=0' --compressed
     """
@@ -17,12 +17,12 @@ class KankanDou(Downloader):
 
     def get(self, *args, **kwargs):
         kwargs.setdefault('headers', self.headers)
-        return super(KankanDou, self).get(*args, **kwargs)
+        return super(KankanDouDownloader, self).get(*args, **kwargs)
 
 
 def main():
     url = 'http://kankandou.com/download/file/12678/6044.html'
-    d = KankanDou(url)
+    d = KankanDouDownloader(url)
     data = d.get_content()
 
     u = QiniuUploder()
