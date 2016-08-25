@@ -403,10 +403,8 @@ def worker():
     dbconn.close()
 
 
-
 def main():
 
-    print 'starting at:',now()
 
     for item in range(16):
 
@@ -424,4 +422,6 @@ def main():
 
     response_worker()  #response_worker开始工作
 
-    print 'all Done at:', now()
+
+if __name__ == "__main__":
+    main()
