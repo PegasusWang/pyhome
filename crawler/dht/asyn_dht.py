@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+import uvloop    # https://github.com/MagicStack/uvloop faster than nodejs
 import binascii
 import os
 import signal
@@ -10,6 +11,7 @@ from socket import inet_ntoa
 from struct import unpack
 
 import bencoder
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 def proper_infohash(infohash):
@@ -226,10 +228,9 @@ class Maga(asyncio.DatagramProtocol):
         pass
 
 
-if __name__ == "__main__":
+def run1():
     import logging
     logging.basicConfig(level=logging.INFO)
-
 
     class Crawler(Maga):
         async def handler(self, infohash, addr):
@@ -237,3 +238,31 @@ if __name__ == "__main__":
 
     crawler = Crawler()
     crawler.run(6881)
+
+
+def run2():
+    import logging
+    logging.basicConfig(level=logging.INFO)
+
+    class Crawler(Maga):
+        async def handle_get_peers(self, infohash, addr):
+            logging.info(
+                "Receive get peers message from DHT {}. Infohash: {}.".format(
+                    addr, infohash
+                )
+            )
+
+        async def handle_announce_peer(self, infohash, addr, peer_addr):
+            logging.info(
+                "Receive announce peer message from DHT {}. Infohash: {}. Peer address:{}".format(
+                    addr, infohash, peer_addr
+                )
+            )
+
+    crawler = Crawler()
+    # Set port to 0 will use a random available port
+    crawler.run(port=0)
+
+
+if __name__ == "__main__":
+    pass
