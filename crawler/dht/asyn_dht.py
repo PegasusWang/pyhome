@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-import uvloop    # https://github.com/MagicStack/uvloop faster than nodejs
 import binascii
 import os
 import signal
@@ -11,7 +10,6 @@ from socket import inet_ntoa
 from struct import unpack
 
 import bencoder
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 def proper_infohash(infohash):
@@ -22,10 +20,12 @@ def proper_infohash(infohash):
 
 
 def random_node_id(size=20):
+    """ 爬虫伪装成node """
     return os.urandom(size)
 
 
 def split_nodes(nodes):
+    """ 解析node，node长度为26，其中20位为nid，4位为ip，2位为port """
     length = len(nodes)
     if (length % 26) != 0:
         return
@@ -198,6 +198,8 @@ class Maga(asyncio.DatagramProtocol):
 
     def send_message(self, data, addr):
         data.setdefault("t", b"tt")
+        # print(data, addr)
+        # print(bencoder.bencode(data), addr)
         self.transport.sendto(bencoder.bencode(data), addr)
 
     def fake_node_id(self, node_id=None):
@@ -265,4 +267,4 @@ def run2():
 
 
 if __name__ == "__main__":
-    pass
+    run2()
